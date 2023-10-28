@@ -35,7 +35,7 @@ server.listen(PORT, () => {
 });
 
 
-const wss = WebSocket.Server({ server });
+const wss = new WebSocket.Server({ server });
 
 
 const clients = new Map();
