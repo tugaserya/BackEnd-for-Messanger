@@ -1,0 +1,29 @@
+{
+  "name": "mesengerbackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js",
+    "start": "node index.js",
+    "pm2": "pm2 start index.js --watch -o ./logs/out.log -e ./logs/err.log"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.18.2",
+    "firebase": "^10.5.0",
+    "firebase-admin": "^11.11.0",
+    "moment": "^2.29.4",
+    "pg": "^8.11.3",
+    "socket.io": "^4.7.2",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
