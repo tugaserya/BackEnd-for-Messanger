@@ -16,6 +16,7 @@ const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
 const messagesRouter = require('./routes/messages.routes');
 const { Model } = require('firebase-admin/lib/machine-learning/machine-learning.js');
+const app = express();
 
 app.use(express.json()); // Распарсить JSON response
 app.use('/', userRouter)
