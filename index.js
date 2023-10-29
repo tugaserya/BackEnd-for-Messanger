@@ -72,7 +72,7 @@ wss.on('connection', (ws) => {
   
         if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
           clients[sender_id] = ws;
-  
+            console.log(ws, "dsds")
           const result = await db.query(
             `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
              values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
