@@ -11,9 +11,7 @@ class messageController {
         const {chat_id, offset} = req.body;
         try {
             const messages = await db.query(
-                `SELECT *
-                 FROM messages
-                 WHERE chat_id = $1
+                `SELECT * FROM messages WHERE chat_id = $1
                  ORDER BY time_stamp DESC LIMIT 500
                  OFFSET $2;`,
                 [chat_id, offset])
