@@ -70,9 +70,7 @@ wss.on('connection', (ws) => {
         const time_stamp = new Date(time_of_day);
         const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
         clients.set(sender_id, ws);
-        console.log(UserSearh.rows.length)
         if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
-            
           const result = await db.query(
             `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
              values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
@@ -81,9 +79,7 @@ wss.on('connection', (ws) => {
   
           const message_id = result.rows[0].id;
           const time_of_day = result.rows[0].time_stamp;
-          console.log(clients.has(recipient_id)+ "it's work")
             if (clients.has(recipient_id)) {
-                console.log(clients.has(recipient_id))
                 const recipient_ws = clients.get(recipient_id);
                 recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
             }
