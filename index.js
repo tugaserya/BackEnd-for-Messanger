@@ -2,6 +2,7 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const WebSocket = require('ws');
+const { Server } = WebSocket;
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
 
@@ -35,7 +36,7 @@ server.listen(PORT, () => {
 });
 
 
-const wss = new WebSocket.Server({ server });
+const wss = new Server({ server });
 
 
 const clients = new Map();
