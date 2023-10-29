@@ -72,7 +72,7 @@ wss.on('connection', (ws) => {
 
         const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
         const time_stamp = new Date(time_of_day);
-        const UserSearh = await db.query(`SELECET id FROM users WHERE id = $1 OR id = $2`,
+        const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2`,
         [sender_id, recipient_id])
         if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()){
         clients.set(sender_id, ws);
