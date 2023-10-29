@@ -82,6 +82,7 @@ wss.on('connection', (ws) => {
             [chat_id, sender_id, recipient_id, content, time_stamp])
             const message_id = result.rows[0].id;
             const time_of_day = result.rows[0].time_stamp;
+            console.log(clients.has(recipient_id))
         if (clients.has(recipient_id)) {
             console.log('work')
             const recipient_ws = clients.get(recipient_id);
