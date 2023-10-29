@@ -84,7 +84,7 @@ wss.on('connection', (ws) => {
             [chat_id, sender_id, recipient_id, content, time_stamp])
             const message_id = result.rows[0].id;
             const time_of_day = result.rows[0].time_stamp;
-
+            console.log(time_of_day)
         if (clients.has(recipient_id)) {
             const recipient_ws = clients.get(recipient_id);
             recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
