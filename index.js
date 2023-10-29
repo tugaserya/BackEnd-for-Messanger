@@ -69,7 +69,7 @@ wss.on('connection', (ws) => {
 
     ws.on('message', async (message) => {
         try {
-        console.log('Получено', message);
+        console.log('Получено', JSON.parse(message));
 
         const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
         const time_stamp = new Date(time_of_day);
