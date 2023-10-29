@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 const { Server } = WebSocket;
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
-const db =require('../db')
+const db =require('./db')
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
