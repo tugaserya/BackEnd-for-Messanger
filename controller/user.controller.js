@@ -9,7 +9,6 @@ class UserController {
         if (loginChecker.rows.length > 0) { // Проверка на существование пользователя
             res.status(409).json({ message: 'This user already exists!' })
         } else {
-            console.log("new user created: ", "username " + user_name," login " + login)
             const hashedPassword = await bcrypt.hash(password, 10) // Хеширование пароля и вставка в БД
             await db.query(`INSERT INTO users (user_name, login, password, FCMtoken) values ($1, $2, $3)`,
             [user_name, login, hashedPassword,"0"])
@@ -23,7 +22,6 @@ class UserController {
     async loginUser(req, res) {
         const {login, password, FCMtoken} = req.body;
         try {
-            console.log("токен устройства ",FCMtoken)
             const userData = await db.query('SELECT * FROM users WHERE login = $1', [login]);
             if (userData.rows.length > 0) {//проверка на валидность по логину, а затем паролю
                 const validPassword = await bcrypt.compare(password, userData.rows[0].password);

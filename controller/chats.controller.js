@@ -15,7 +15,6 @@ class ChatsController {
              if (ChatChecker.rows.length > 0){//создание чата с другим пользователем с поверкой на существование чата с ним
                 res.status(409).json({ message: 'This chat alredy exist!' })
             } else{
-                console.log("новый чат: ", user_id_1 + " c " + user_id_2)
             await db.query(`INSERT INTO chats (user_id_1, user_id_2) values ($1, $2)`, [user_id_1, user_id_2])
             res.status(200).json({ message: 'You create an a new chat!' })
             }
