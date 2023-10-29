@@ -64,12 +64,10 @@ const getNotification = async (sender_id, recipient_id, content) => {
 }
 
 wss.on('connection', (ws) => {
-    console.log('Новое соединение установлено');
 
 
     ws.on('message', async (message) => {
         try {
-        console.log('Получено', JSON.parse(message));
 
         const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
         const time_stamp = new Date(time_of_day);
@@ -84,8 +82,8 @@ wss.on('connection', (ws) => {
             [chat_id, sender_id, recipient_id, content, time_stamp])
             const message_id = result.rows[0].id;
             const time_of_day = result.rows[0].time_stamp;
-            console.log(time_of_day)
         if (clients.has(recipient_id)) {
+            console.log('work')
             const recipient_ws = clients.get(recipient_id);
             recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
             await getNotification(sender_id, recipient_id, content)
