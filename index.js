@@ -80,6 +80,7 @@ wss.on('connection', (ws) => {
   
           const message_id = result.rows[0].id;
           const time_of_day = result.rows[0].time_stamp;
+          console.log(clients.has(recipient_id))
             if (clients.has(recipient_id)) {
                 console.log(clients.has(recipient_id))
                 const recipient_ws = clients.get(recipient_id);
