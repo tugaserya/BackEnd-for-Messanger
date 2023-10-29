@@ -41,7 +41,7 @@ server.listen(PORT, () => {
 const wss = new Server({ server });
 
 
-const clients = new Map();
+const clients = {};
 const getNotification = async (sender_id, recipient_id, content) => {
     const userDeviceToken = await db.query(`SELECT * FROM users WHERE id = $1;`, [recipient_id])
     const user_name = await db.query(`SELECT user_name FROM users   WHERE id = $1`, [sender_id]);
@@ -64,37 +64,37 @@ const getNotification = async (sender_id, recipient_id, content) => {
 }
 
 wss.on('connection', (ws) => {
-
-
     ws.on('message', async (message) => {
-        try {
-
+      try {
         const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
         const time_stamp = new Date(time_of_day);
-        const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`,
-        [sender_id, recipient_id])
-        if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()){
-        clients.set(sender_id, ws);
-        
-        const result = await db.query(
+        const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
+  
+        if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
+          clients[sender_id] = ws;
+  
+          const result = await db.query(
             `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
              values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
-            [chat_id, sender_id, recipient_id, content, time_stamp])
-            const message_id = result.rows[0].id;
-            const time_of_day = result.rows[0].time_stamp;
-        if (clients.has(recipient_id)) {
-            const recipient_ws = clients.get(recipient_id);
-            console.log(recipient_ws)
+            [chat_id, sender_id, recipient_id, content, time_stamp]
+          );
+  
+          const message_id = result.rows[0].id;
+          const time_of_day = result.rows[0].time_stamp;
+  
+          if (clients[recipient_id]) {
+            const recipient_ws = clients[recipient_id];
+            console.log(recipient_ws);
             recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
-            await getNotification(sender_id, recipient_id, content)
+            await getNotification(sender_id, recipient_id, content);
+          }
+  
+          ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
         }
-
-        ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
-    } else{
-        return console.log('Все наебнулось')
-    }}catch (err) {
-        console.error('ошибка сообщения ', err);
-    }});
-});
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  });
 
 module.exports = server;
