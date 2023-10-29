@@ -41,7 +41,7 @@ server.listen(PORT, () => {
 const wss = new Server({ server });
 
 
-const clients = {};
+const clients = new Map();
 const getNotification = async (sender_id, recipient_id, content) => {
     const userDeviceToken = await db.query(`SELECT * FROM users WHERE id = $1;`, [recipient_id])
     const user_name = await db.query(`SELECT user_name FROM users   WHERE id = $1`, [sender_id]);
@@ -71,8 +71,7 @@ wss.on('connection', (ws) => {
         const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
   
         if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
-          clients[sender_id] = ws;
-            console.log(ws, "dsds")
+            clients.set(sender_id, ws);
           const result = await db.query(
             `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
              values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
@@ -82,13 +81,11 @@ wss.on('connection', (ws) => {
           const message_id = result.rows[0].id;
           const time_of_day = result.rows[0].time_stamp;
             console.log(clients[recipient_id])
-          if (Object.keys(clients).includes(recipient_id)) {
-            const recipient_ws = clients[recipient_id];
-            console.log(recipient_ws);
-            recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
-            await getNotification(sender_id, recipient_id, content);
-          }
-  
+            if (clients.has(recipient_id)) {
+                console.log(clients.has(recipient_id))
+                const recipient_ws = clients.get(recipient_id);
+                recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+            }else{await getNotification(sender_id, recipient_id, content)}
           ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
         }
       } catch (error) {
