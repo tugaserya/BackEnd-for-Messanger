@@ -73,4 +73,4 @@ const biba = wss.on('connection', (ws) => {
     });
   });
 
-module,exports = biba()
+module.exports = biba()
