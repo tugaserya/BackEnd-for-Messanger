@@ -43,8 +43,9 @@ const getNotification = async (sender_id, recipient_id, content) => {
             console.log('Error sending message:', error);
         });
 }
+class Boba{
 
-function biba(){
+ async biba(){
     wss.on('connection', (ws) => {
     
     ws.on('message', async (message) => {
@@ -76,4 +77,5 @@ function biba(){
   });
 }
 
-module.exports = new biba()
+}
+module.exports = new Boba()
