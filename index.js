@@ -24,6 +24,7 @@ const options = {
 const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
 const messagesRouter = require('./routes/messages.routes');
+const { Model } = require('firebase-admin/lib/machine-learning/machine-learning');
 
 const app = express();
 
@@ -94,3 +95,5 @@ server.listen(PORT, () => {
 //       }
 //     });
 //   });
+
+module.exports = server;

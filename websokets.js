@@ -1,25 +1,16 @@
-const express = require('express');
-const https = require('https');
-const fs = require('fs');
 const WebSocket = require('ws');
 const { Server } = WebSocket;
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
 const db =require('./db')
 const moment = require('moment')
+const index = require('./index')
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/domenforallnames.space/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/domenforallnames.space/fullchain.pem')
-  };
-const app = express();
-const server = https.createServer(options, app);
-
-const wss = new Server({ server });
+const wss = new Server({ index });
 
 
 const clients = new Map();
