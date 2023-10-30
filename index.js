@@ -31,9 +31,8 @@ app.use(express.json()); // Распарсить JSON response
 app.use('/', userRouter)
 app.use('/', chatRouter)
 app.use('/', messagesRouter)
-const websoket = ws.biba.bind()
-websoket.call()
-
+const webs = ws()
+webs()
 
 const server = https.createServer(options, app);
 
