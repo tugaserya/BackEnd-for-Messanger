@@ -5,12 +5,12 @@ const serviceAccount = require("./serviceAccountKey.json")
 const db =require('./db')
 const moment = require('moment')
 const index = require('./index')
-
+const server = index
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-const wss = new Server({ index });
+const wss = new Server({ server });
 
 
 const clients = new Map();
