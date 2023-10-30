@@ -10,7 +10,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-const wss = new Server({ server });
+const wss = index
 
 
 const clients = new Map();

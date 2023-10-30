@@ -2,8 +2,8 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const ws = require('./websokets')
-// const WebSocket = require('ws');
-// const { Server } = WebSocket;
+const WebSocket = require('ws');
+const { Server } = WebSocket;
 // const admin = require("firebase-admin");
 // const serviceAccount = require("./serviceAccountKey.json")
 // const db =require('./db')
@@ -42,7 +42,7 @@ server.listen(PORT, () => {
 });
 
 
-// const wss = new Server({ server });
+const wss = new Server({ server });
 
 
 // const clients = new Map();
@@ -96,4 +96,4 @@ server.listen(PORT, () => {
 //     });
 //   });
 
-module.exports = server;
+module.exports = wss;
