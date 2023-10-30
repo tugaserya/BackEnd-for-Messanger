@@ -31,7 +31,7 @@ app.use(express.json()); // Распарсить JSON response
 app.use('/', userRouter)
 app.use('/', chatRouter)
 app.use('/', messagesRouter)
-ws.biba()
+app.use('/', ws.biba())
 
 
 const server = https.createServer(options, app);
