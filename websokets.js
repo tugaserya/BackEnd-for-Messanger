@@ -44,7 +44,9 @@ const getNotification = async (sender_id, recipient_id, content) => {
         });
 }
 
-const biba = wss.on('connection', (ws) => {
+function biba(){
+    wss.on('connection', (ws) => {
+    
     ws.on('message', async (message) => {
       try {
         const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
@@ -72,5 +74,6 @@ const biba = wss.on('connection', (ws) => {
       }
     });
   });
+}
 
-module.exports = biba()
+module.exports = new biba()
