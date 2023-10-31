@@ -60,7 +60,6 @@ class ChatsController {
                 return messageSearcher.rows[0];
             }));
 
-            // Объедините информацию о чатах и последних сообщениях
             const chatsWithLastMessage = chats.map((chat, index) => {
                 let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
                 let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
