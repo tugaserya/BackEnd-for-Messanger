@@ -2,11 +2,11 @@
   "name": "mesengerbackend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "test.js",
   "scripts": {
-    "test": "nodemon index.js",
-    "start": "node index.js",
-    "pm2": "pm2 start index.js --watch -o ./logs/out.log -e ./logs/err.log"
+    "test": "nodemon test.js",
+    "start": "node test.js",
+    "pm2": "pm2 start test.js --watch -o ./logs/out.log -e ./logs/err.log"
   },
   "keywords": [],
   "author": "",
