@@ -35,8 +35,8 @@ app.use('/', messagesRouter)
 
 const server = https.createServer(options, app);
 
-server.listen(testPORT, () => {
-  console.log('Сервер слушает на порту', testPORT);
+server.listen(PORT, () => {
+  console.log('Сервер слушает на порту', PORT);
 });
 
 
