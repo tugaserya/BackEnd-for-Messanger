@@ -13,7 +13,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 const PORT = process.env.PORT || 4200;
-const testPORT = process.env.PORT || 2228;
+const testPORT = 2228;
 const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/domenforallnames.space/privkey.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/live/domenforallnames.space/fullchain.pem')
@@ -35,8 +35,8 @@ app.use('/', messagesRouter)
 
 const server = https.createServer(options, app);
 
-server.listen(PORT, () => {
-  console.log('Сервер слушает на порту', PORT);
+server.listen(testPORT, () => {
+  console.log('Сервер слушает на порту', testPORT);
 });
 
 
