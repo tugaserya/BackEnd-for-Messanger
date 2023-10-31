@@ -40,7 +40,6 @@ server.listen(PORT, () => {
   console.log('Сервер слушает на порту', PORT);
 });
 
-
 const wss = new Server({ server });
 
 
