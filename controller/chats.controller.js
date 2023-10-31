@@ -73,6 +73,9 @@ class ChatsController {
                     last_message_time: lastMessageTime
                 };
             });
+            chatsWithLastMessage.sort((a, b) => {
+                return new Date(b.last_message_time) - new Date(a.last_message_time);
+            });
             res.status(200).json(chatsWithLastMessage);
         } catch (err) {
             console.error('ошибка получения чатов ', err);
