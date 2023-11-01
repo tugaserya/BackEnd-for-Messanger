@@ -1,17 +1,9 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const ws = require('./websokets')
-const WebSocket = require('ws');
-const { Server } = WebSocket;
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json")
-const db =require('./db')
-const moment = require('moment')
+const wsModule = require('./websocket')
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+
 const PORT = process.env.PORT || 4200;
 const testPORT = 2228;
 const options = {
