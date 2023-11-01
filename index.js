@@ -1,7 +1,7 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const wsModule = require('./websocket')
+const wsModule = require('./websockets')
 
 
 const PORT = process.env.PORT || 4200;
@@ -27,8 +27,8 @@ app.use('/', messagesRouter)
 
 const server = https.createServer(options, app);
 
-server.listen(testPORT, () => {
-  console.log('Сервер слушает на порту', testPORT);
+server.listen(PORT, () => {
+  console.log('Сервер слушает на порту', PORT);
 });
 
 wsModule.initWebSocket(server);
