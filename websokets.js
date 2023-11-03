@@ -54,7 +54,8 @@ module.exports.initWebSocket = (server) => {
                     if (clients.has(recipient_id)) {
                         const recipient_ws = clients.get(recipient_id);
                         recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
-                    } else {await getNotification(sender_id, recipient_id, content)}
+                    }
+                    await getNotification(sender_id, recipient_id, content)
                     ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
                 }
             } catch (error) {
