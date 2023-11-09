@@ -12,20 +12,18 @@ const options = {
 };
 
 
-// Запросы для подключения путей URL
 const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
 const messagesRouter = require('./routes/messages.routes');
 
 const app = express();
 
-app.use(express.json()); // Распарсить JSON response
+app.use(express.json());
 app.use('/', userRouter)
 app.use('/', chatRouter)
 app.use('/', messagesRouter)
-// const webs = ws()
-// webs()
-//
+
+
 const server = https.createServer(options, app);
 
 server.listen(testPORT, () => {

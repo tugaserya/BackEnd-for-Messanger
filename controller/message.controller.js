@@ -1,5 +1,5 @@
 const db =require('../db')
-
+const JWT_checker = require('../JWT')
 
 
 
@@ -8,8 +8,9 @@ class messageController {
 
 
     async getPastMessages(req, res) {
-        const {chat_id, offset} = req.body;
+        const {chat_id, offset, token} = req.body;
         try {
+            if (JWT_checker(token)){
             const messages = await db.query(
                 `SELECT * FROM messages WHERE chat_id = $1
                  ORDER BY time_stamp DESC LIMIT 20
@@ -20,6 +21,7 @@ class messageController {
             } else {
                 res.status(404).json({message: "Сообщений не найдено"})
             }
+        }else{ return }
         } catch (err) {
             console.error("ошибка при получении сообщений из БД ", err);
             emitter.removeListener('newMessage', newMessageListener);

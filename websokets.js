@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const { Server } = WebSocket;
 const db =require('./db')
+const jwt = require('jsonwebtoken');
 const moment = require('moment')
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
@@ -35,7 +36,16 @@ const getNotification = async (sender_id, recipient_id, content) => {
 module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
-    wss.on('connection', (ws) => {
+    wss.on('connection', (ws, req) => {
+        const token = req.url.split('?token=')[1];
+        try {
+            const payload = jwt.verify(token, 'PxJdEFnXau');
+            ws.user = payload; 
+        } catch (err) {
+            ws.close();
+            return;
+        }
+
         ws.on('message', async (message) => {
             try {
                 const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
@@ -64,3 +74,4 @@ module.exports.initWebSocket = (server) => {
         });
     });
 }
+
