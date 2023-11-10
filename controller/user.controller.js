@@ -1,5 +1,6 @@
 const db = require('../db')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
 
 class UserController {
     async registerUser(req, res) {
@@ -9,7 +10,7 @@ class UserController {
         if (loginChecker.rows.length > 0) { // Проверка на существование пользователя
             res.status(409).json({ message: 'This user already exists!' })
         } else {
-            const hashedPassword = await bcrypt.hash(password, 10) // Хеширование пароля и вставка в БД
+            const hashedPassword = await bcrypt.hash(password, 10)
             await db.query(`INSERT INTO users (user_name, login, password, FCMtoken) values ($1, $2, $3, $4)`,
             [user_name, login, hashedPassword,0])
             res.status(200).json({ message: 'User registered successfully!' });

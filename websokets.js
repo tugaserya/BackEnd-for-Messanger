@@ -1,10 +1,10 @@
 const WebSocket = require('ws');
 const { Server } = WebSocket;
 const db =require('./db')
-const jwt = require('jsonwebtoken');
 const moment = require('moment')
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
+const {UserChecker} = require("./userChecker");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -36,7 +36,11 @@ const getNotification = async (sender_id, recipient_id, content) => {
 module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
-    wss.on('connection', (ws) => {
+    wss.on('connection', async (ws, req) => {
+        const login = req.url.split(/login=|&/)[1]
+        const password = req.url.split('&password=')[1]
+        if(await UserChecker(login, password)){
+
         ws.on('message', async (message) => {
             try {
                 const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
@@ -49,7 +53,6 @@ module.exports.initWebSocket = (server) => {
                         values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
                         [chat_id, sender_id, recipient_id, content, time_stamp]
                     );
-
                     const message_id = result.rows[0].id;
                     const time_of_day = result.rows[0].time_stamp;
                     if (clients.has(recipient_id)) {
@@ -62,6 +65,7 @@ module.exports.initWebSocket = (server) => {
             } catch (error) {
                 console.error(error);
             }
-        });
-    });
+        }) } else { return }
+    })
 }
+

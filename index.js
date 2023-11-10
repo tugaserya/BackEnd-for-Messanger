@@ -12,14 +12,15 @@ const options = {
 };
 
 
-// Запросы для подключения путей URL
+
+
 const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
 const messagesRouter = require('./routes/messages.routes');
 
 const app = express();
 
-app.use(express.json()); 
+app.use(express.json());
 app.use('/', userRouter)
 app.use('/', chatRouter)
 app.use('/', messagesRouter)

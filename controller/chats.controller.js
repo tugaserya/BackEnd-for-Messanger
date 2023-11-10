@@ -1,11 +1,11 @@
 const db = require('../db')
-
-
+const {UserChecker} = require("../userChecker");
 class ChatsController {
 
     async createChat(req, res) {
-        const { user_id_1, user_id_2 } = req.body
+        const { user_id_1, user_id_2, login, password } = req.body
         try {
+            if(await UserChecker(login, password)){
             const idSercher = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2`,
                 [user_id_1, user_id_2])
             if (idSercher.rows.length == 2) {
@@ -19,14 +19,16 @@ class ChatsController {
                     res.status(200).json({ message: 'You create an a new chat!' })
                 }
             } else { res.status(404).json({ message: "Your account isn't exist!" }) }
+        } else { return }
         } catch (err) {
             console.error('ошибка при создании чата ', err);
         }
     }
 
     async getChat(req, res) {
-        const { id } = req.body;
+        const { id, login, password } = req.body;
         try {
+            if(await UserChecker(login, password)){
             const idSearcher = await db.query(`SELECT id FROM users WHERE id = $1`, [id]);
 
             if (idSearcher.rows.length === 0) {
@@ -76,43 +78,44 @@ class ChatsController {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
             res.status(200).json(chatsWithLastMessage);
+        } else { return }
         } catch (err) {
             console.error('ошибка получения чатов ', err);
         }
     }
 
+// TODO: доделать
+    // async archiveChat(req, res) {
+    //     const { chat_id } = req.body;
+    //     try {
+    //         const chat = await db.query(
+    //             `SELECT * FROM chats WHERE id = $1;`,
+    //             [chat_id])
+    //         if (chat.rows.length > 0) {
+    //             // Архивирование всех сообщений из чата
+    //             await db.query(
+    //                 `INSERT INTO ARCHIVEmessages SELECT * FROM messages WHERE chat_id = $1;`,
+    //                 [chat_id])
+    //             await db.query(
+    //                 `DELETE FROM messages WHERE chat_id = $1;`,
+    //                 [chat_id])
 
-    async archiveChat(req, res) {
-        const { chat_id } = req.body;
-        try {
-            const chat = await db.query(
-                `SELECT * FROM chats WHERE id = $1;`,
-                [chat_id])
-            if (chat.rows.length > 0) {
-                // Архивирование всех сообщений из чата
-                await db.query(
-                    `INSERT INTO ARCHIVEmessages SELECT * FROM messages WHERE chat_id = $1;`,
-                    [chat_id])
-                await db.query(
-                    `DELETE FROM messages WHERE chat_id = $1;`,
-                    [chat_id])
+    //             // Архивирование самого чата
+    //             await db.query(
+    //                 `INSERT INTO ARCHIVEchats SELECT * FROM chats WHERE id = $1;`,
+    //                 [chat_id])
+    //             await db.query(
+    //                 `DELETE FROM chats WHERE id = $1;`,
+    //                 [chat_id])
 
-                // Архивирование самого чата
-                await db.query(
-                    `INSERT INTO ARCHIVEchats SELECT * FROM chats WHERE id = $1;`,
-                    [chat_id])
-                await db.query(
-                    `DELETE FROM chats WHERE id = $1;`,
-                    [chat_id])
-
-                res.status(200).json({ message: "Чат успешно архивирован" })
-            } else {
-                res.status(404).json({ message: "Чат не найден" })
-            }
-        } catch (error) {
-            console.error("ошибка при удалении и архивации чата ", err)
-        }
-    }
+    //             res.status(200).json({ message: "Чат успешно архивирован" })
+    //         } else {
+    //             res.status(404).json({ message: "Чат не найден" })
+    //         }
+    //     } catch (error) {
+    //         console.error("ошибка при удалении и архивации чата ", err)
+    //     }
+    // }
 }
 
 module.exports = new ChatsController()

@@ -2,4 +2,5 @@
 /.idea
 /.db.js
 /.test.js
-/..vscode
+/.vscode
+

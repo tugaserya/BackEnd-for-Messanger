@@ -6,7 +6,7 @@
   "scripts": {
     "test": "nodemon index.js",
     "start": "node index.js",
-    "pm2": "pm2 start index.js --watch -o ./logs/out.log -e ./logs/err.log"
+    "pm2": "pm2 start index.js --watch --log logs.log"
   },
   "keywords": [],
   "author": "",
