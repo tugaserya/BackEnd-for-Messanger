@@ -8,7 +8,7 @@ module.exports.UserChecker = async (login, password) => {
                 console.log("work 2");
                 const validPassword = await bcrypt.compare(password, userData.rows[0].password)
                 console.log("work 3")
-                if (validPassword) {
+                if (validPassword === true) {
                     console.log("work 4");
                     return true
                 } else {
