@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { Server } = WebSocket;
 const db =require('./db')
-const jwt = require('jsonwebtoken');
+const UserChecker = require('./userChecker')
 const moment = require('moment')
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
@@ -37,14 +37,9 @@ module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
     wss.on('connection', (ws, req) => {
-        const token = req.url.split('?token=')[1];
-        try {
-            const payload = jwt.verify(token, 'PxJdEFnXau');
-            ws.user = payload; 
-        } catch (err) {
-            ws.close();
-            return;
-        }
+        const login = req.url.split('?login=')[1]
+        const password = req.url.split('&password=')[1]
+        if(UserChecker(login, password)){
 
         ws.on('message', async (message) => {
             try {
@@ -71,7 +66,7 @@ module.exports.initWebSocket = (server) => {
             } catch (error) {
                 console.error(error);
             }
-        });
-    });
+        }) } else { return }
+    }) 
 }
 
