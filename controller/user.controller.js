@@ -1,6 +1,6 @@
 const db = require('../db')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken');
+const {UserChecker} = require("../userChecker");
 
 class UserController {
     async registerUser(req, res) {
@@ -39,6 +39,18 @@ class UserController {
             }
         } catch (err) {
             console.error('Error validating user data', err);
+        }
+    }
+
+    async LogOutUser(req, res) {
+        const {login, password} = req.body
+        try{
+            if (await UserChecker(login, password)) {
+                await db.query(`UPDATE users SET FCMtoken = $1 WHERE login = $2;`,[0, login])
+                res.status(200).json({message:"LogOut is Succesfull"})
+            } else { return }
+        }catch(err){
+            res.status(418).json({message:"Я ЧАЙНИЧЕК"})
         }
     }
 
