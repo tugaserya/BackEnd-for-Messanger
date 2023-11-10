@@ -1,5 +1,5 @@
 const db = require('../db')
-const UserChecker = require('../userChecker')
+const {UserChecker} = require("../userChecker");
 
 
 
@@ -10,7 +10,7 @@ class messageController {
     async getPastMessages(req, res) {
         const { chat_id, offset, login, password} = req.body;
         try {
-            if (UserChecker(login, password)) {
+            if (await UserChecker(login, password)) {
                 const messages = await db.query(
                     `SELECT * FROM messages WHERE chat_id = $1
                  ORDER BY time_stamp DESC LIMIT 20

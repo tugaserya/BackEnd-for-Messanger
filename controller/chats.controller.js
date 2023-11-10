@@ -1,12 +1,11 @@
 const db = require('../db')
-const UserChecker = require('../userChecker')
-
+const {UserChecker} = require("../userChecker");
 class ChatsController {
 
     async createChat(req, res) {
         const { user_id_1, user_id_2, login, password } = req.body
         try {
-            if(UserChecker(login, password)){
+            if(await UserChecker(login, password)){
             const idSercher = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2`,
                 [user_id_1, user_id_2])
             if (idSercher.rows.length == 2) {
@@ -29,7 +28,7 @@ class ChatsController {
     async getChat(req, res) {
         const { id, login, password } = req.body;
         try {
-            if(UserChecker(login, password)){
+            if(await UserChecker(login, password)){
             const idSearcher = await db.query(`SELECT id FROM users WHERE id = $1`, [id]);
 
             if (idSearcher.rows.length === 0) {

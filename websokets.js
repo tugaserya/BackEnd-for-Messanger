@@ -1,10 +1,10 @@
 const WebSocket = require('ws');
 const { Server } = WebSocket;
 const db =require('./db')
-const UserChecker = require('./userChecker')
 const moment = require('moment')
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
+const {UserChecker} = require("./userChecker");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -36,10 +36,10 @@ const getNotification = async (sender_id, recipient_id, content) => {
 module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
-    wss.on('connection', (ws, req) => {
+    wss.on('connection', async (ws, req) => {
         const login = req.url.split('?login=')[1]
         const password = req.url.split('&password=')[1]
-        if(UserChecker(login, password)){
+        if(await UserChecker(login, password)){
 
         ws.on('message', async (message) => {
             try {
@@ -67,6 +67,6 @@ module.exports.initWebSocket = (server) => {
                 console.error(error);
             }
         }) } else { return }
-    }) 
+    })
 }
 
