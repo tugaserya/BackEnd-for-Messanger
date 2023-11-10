@@ -11,8 +11,8 @@ class UserController {
             res.status(409).json({ message: 'This user already exists!' })
         } else {
             const hashedPassword = await bcrypt.hash(password, 10)
-            await db.query(`INSERT INTO users (user_name, login, password, FCMtoken, JWTtoken) values ($1, $2, $3, $4, $5)`,
-            [user_name, login, hashedPassword,0, 0])
+            await db.query(`INSERT INTO users (user_name, login, password, FCMtoken) values ($1, $2, $3, $4)`,
+            [user_name, login, hashedPassword,0])
             res.status(200).json({ message: 'User registered successfully!' });
         }}catch (err) {
             console.error('ошибка при регистрации', err);
@@ -27,12 +27,10 @@ class UserController {
             if (userData.rows.length > 0) {//проверка на валидность по логину, а затем паролю
                 const validPassword = await bcrypt.compare(password, userData.rows[0].password);
                 if (validPassword) {
-                    const token = jwt.sign({ foo: 'bar' }, 'PxJdEFnXau');
-                    await db.query(`UPDATE users SET FCMtoken = $1, JWTtoken = $2 WHERE login = $2;`,[FCMtoken, token, login])
+                    await db.query(`UPDATE users SET FCMtoken = $1 WHERE login = $2;`,[FCMtoken, login])
                     res.status(200).json({
                         "id": userData.rows[0].id,
-                        "user_name": userData.rows[0].user_name,
-                        "token": token});
+                        "user_name": userData.rows[0].user_name});
                 } else {
                     res.status(401).json({error: 'wrong login or password'});
                 }
