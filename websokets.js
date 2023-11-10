@@ -37,7 +37,7 @@ module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
     wss.on('connection', async (ws, req) => {
-        const login = req.url.split(/'login='|'&'/)[1]
+        const login = req.url.split(/login=|&/)[1]
         const password = req.url.split('&password=')[1]
         if(await UserChecker(login, password)){
 
