@@ -13,7 +13,7 @@ class messageController {
             if (await UserChecker(login, password)) {
                 const messages = await db.query(
                     `SELECT * FROM messages WHERE chat_id = $1
-                 ORDER BY time_stamp DESC LIMIT 20
+                 ORDER BY time_stamp DESC LIMIT 300
                  OFFSET $2;`,
                     [chat_id, offset])
                 if (messages.rows.length > 0) {
