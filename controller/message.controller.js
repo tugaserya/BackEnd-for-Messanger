@@ -24,7 +24,6 @@ class messageController {
             } else { return }
         } catch (err) {
             console.error("ошибка при получении сообщений из БД ", err);
-            emitter.removeListener('newMessage', newMessageListener);
         }
     }
 
@@ -49,7 +48,7 @@ class messageController {
                 }
             } else { return }
         } catch (error) {
-            console.error("ошибка обновления сообщения: ", err)
+            console.error("ошибка обновления сообщения: ", error)
         }
     }
 
@@ -59,7 +58,7 @@ class messageController {
             if (await UserChecker(login, password)) {
                 const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                 const message = await db.query(`SELECT * FROM messeges WHERE id = $1;`, [message_id])
-                if (user_id == message.sender_id || user_id == message.recipient_id) {
+                if (user_id == message[0].sender_id || user_id == message[0].recipient_id) {
                     const message = await db.query(
                         `SELECT *
                  FROM messages
@@ -84,7 +83,7 @@ class messageController {
                 }
             } else { return }
         } catch (error) {
-            console.error("ошибка при архивации и удалении сообщения ", err)
+            console.error("ошибка при архивации и удалении сообщения ", error)
         }
     }
 }
