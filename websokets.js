@@ -46,10 +46,8 @@ module.exports.initWebSocket = (server) => {
                 try {
                     const { type } = JSON.parse(message);
                     const message_data = message
-                    console.log(type)
                     switch (type) {
                         case 'new_message':
-                            console.log('work 1')
                             const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)
                             const time_stamp = new Date(time_of_day);
                             const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
@@ -122,7 +120,7 @@ module.exports.initWebSocket = (server) => {
                                         const recipient_ws = clients.get(String(message.rows[0].recipient_id));
                                         const sender_ws = clients.get(String(message.rows[0].sender_id));
                                         recipient_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }));
-                                        sender_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }))
+                                        sender_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))
                                     }
                                 }
                             } else { return }
