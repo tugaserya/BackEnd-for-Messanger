@@ -37,11 +37,10 @@ module.exports.initWebSocket = (server) => {
     const wss = new Server({ server });
 
     wss.on('connection', async (ws, req) => {
-        const login = decodeURIComponent(req.url.split(/login=|&password/)[1])
-        const password = req.url.split('&password=')[1]
+        const login = decodeURIComponent(req.url.split(/login=|&password=/)[1])
+        const password = req.url.split(/&password=|&id=/)[1]
         const id = req.url.split('&id=')[1]
         clients.set(id, ws);
-        console.log('dsds')
         if (await UserChecker(login, password)) {
             ws.on('message', async (message) => {
                 try {
