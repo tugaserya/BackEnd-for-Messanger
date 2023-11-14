@@ -33,3 +33,5 @@ server.listen(PORT, () => {
 });
 
 wsModule.initWebSocket(server);
+
+module.exports = server()
