@@ -63,8 +63,7 @@ module.exports.initWebSocket = (server) => {
                                 const time_of_day = result.rows[0].time_stamp;
                                 if (clients.has(String(recipient_id))) {
                                     const recipient_ws = clients.get(String(recipient_id));
-                                    console.log('work 2')
-                                    recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+                                    recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day, type: "new_message" }));
                                 }
                                 await getNotification(sender_id, recipient_id, content)
                                 ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day, type:"new_message" }));
@@ -80,10 +79,20 @@ module.exports.initWebSocket = (server) => {
                                 SET content = $1
                                 WHERE id = $2 RETURNING *;`,
                                     [new_content, message_id])
-                                ws.send(JSON.stringify({updated_message, type: "updated_message"}))
-                                if (clients.has(message_update.rows[0].recipient_id)) {
-                                    const recipient_ws = clients.get(message_update.rows[0].recipient_id);
-                                    recipient_ws.send(JSON.stringify({updated_message, type: "updated_message"}))
+                                ws.send(JSON.stringify({message_id: updated_message.rows[0].id,
+                                                        sender_id: updated_message.rows[0].sender_id,
+                                                        chat_id: updated_message.rows[0].chat_id,
+                                                        time_of_day: updated_message.rows[0].time_stamp,
+                                                        new_content: updated_message.rows[0].content,
+                                                        type: "updated_message"}))
+                                if (clients.has(String(message_update.rows[0].recipient_id))) {
+                                    const recipient_ws = clients.get(String(message_update.rows[0].recipient_id));
+                                    recipient_ws.send(JSON.stringify({message_id: updated_message.rows[0].id,
+                                        sender_id: updated_message.rows[0].sender_id,
+                                        chat_id: updated_message.rows[0].chat_id,
+                                        time_of_day: updated_message.rows[0].time_stamp,
+                                        new_content: updated_message.rows[0].content,
+                                        type: "updated_message"}))
                                 }
                             }
                             break;
@@ -109,9 +118,9 @@ module.exports.initWebSocket = (server) => {
                             FROM messages
                             WHERE id = $1;`,
                                         [deleting_message_id])
-                                    if (clients.has(message.rows[0].recipient_id) && clients.has(message.rows[0].sender_id)) {
-                                        const recipient_ws = clients.get(message.rows[0].recipient_id);
-                                        const sender_ws = clients.get(message.rows[0].sender_id);
+                                    if (clients.has(String(message.rows[0].recipient_id)) && clients.has(String(message.rows[0].sender_id))) {
+                                        const recipient_ws = clients.get(String(message.rows[0].recipient_id));
+                                        const sender_ws = clients.get(String(message.rows[0].sender_id));
                                         recipient_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }));
                                         sender_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }))
                                     }
