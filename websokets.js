@@ -39,6 +39,8 @@ module.exports.initWebSocket = (server) => {
     wss.on('connection', async (ws, req) => {
         const login = decodeURIComponent(req.url.split(/login=|&password/)[1])
         const password = req.url.split('&password=')[1]
+        const id = req.url.split('&id=')[1]
+        clients.set(id, ws);
         if (await UserChecker(login, password)) {
             ws.on('message', async (message) => {
                 try {
@@ -51,7 +53,6 @@ module.exports.initWebSocket = (server) => {
                             const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)
                             const time_stamp = new Date(time_of_day);
                             const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
-                            clients.set(sender_id, ws);
                             if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
                                 const result = await db.query(
                                     `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
@@ -80,10 +81,10 @@ module.exports.initWebSocket = (server) => {
                                 SET content = $1
                                 WHERE id = $2 RETURNING *;`,
                                     [new_content, message_id])
-                                ws.send(JSON.stringify({updated_message , type: "updated_message"}))
-                                if (clients.has(recipient_id)) {
-                                    const recipient_ws = clients.get(recipient_id);
-                                    recipient_ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
+                                ws.send(JSON.stringify({updated_message, type: "updated_message"}))
+                                if (clients.has(message_update.rows[0].recipient_id)) {
+                                    const recipient_ws = clients.get(message_update.rows[0].recipient_id);
+                                    recipient_ws.send(JSON.stringify({updated_message, type: "updated_message"}))
                                 }
                             }
                             break;
@@ -109,9 +110,9 @@ module.exports.initWebSocket = (server) => {
                             FROM messages
                             WHERE id = $1;`,
                                         [deleting_message_id])
-                                    if (clients.has(recipient_id) && clients.has(sender_id)) {
-                                        const recipient_ws = clients.get(recipient_id);
-                                        const sender_ws = clients.get(sender_id);
+                                    if (clients.has(message.rows[0].recipient_id) && clients.has(message.rows[0].sender_id)) {
+                                        const recipient_ws = clients.get(message.rows[0].recipient_id);
+                                        const sender_ws = clients.get(message.rows[0].sender_id);
                                         recipient_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }));
                                         sender_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }))
                                     }
