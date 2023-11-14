@@ -63,7 +63,7 @@ module.exports.initWebSocket = (server) => {
                                     recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
                                 }
                                 await getNotification(sender_id, recipient_id, content)
-                                ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+                                ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day, type:"new_message" }));
                             }
                             break;
                         case 'update_message':
@@ -73,13 +73,12 @@ module.exports.initWebSocket = (server) => {
                                 const updated_message = await db.query(
                                     `UPDATE messages
                                 SET content = $1
-                                WHERE id = $2
-                                RETURNING *;`,
+                                WHERE id = $2;`,
                                     [new_content, message_id])
-                                ws.send(JSON.stringify(updated_message.rows))
+                                ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
-                                    recipient_ws.send(JSON.stringify(updated_message.rows));
+                                    recipient_ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
                                 }
                             }
                             break;
@@ -107,8 +106,8 @@ module.exports.initWebSocket = (server) => {
                                     if (clients.has(recipient_id) && clients.has(sender_id)) {
                                         const recipient_ws = clients.get(recipient_id);
                                         const sender_ws = clients.get(sender_id);
-                                        recipient_ws.send(JSON.stringify({ status: 200 }));
-                                        sender_ws.send(JSON.stringify({ status: 200 }))
+                                        recipient_ws.send(JSON.stringify({message_id, type: "delete_delete_message"}));
+                                        sender_ws.send(JSON.stringify({ message_id, type: "delete_message" }))
                                     }
                                 }
                             } else { return }
