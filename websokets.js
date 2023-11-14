@@ -40,11 +40,10 @@ module.exports.initWebSocket = (server) => {
         const login = decodeURIComponent(req.url.split(/login=|&password/)[1])
         const password = req.url.split('&password=')[1]
         if (await UserChecker(login, password)) {
-
             ws.on('message', async (message) => {
                 try {
                     const { chat_id, sender_id, recipient_id, content, time_of_day, type } = JSON.parse(message);
-
+                    console.log(message)
                     switch (type) {
                         case 'new_message':
                             const time_stamp = new Date(time_of_day);
@@ -70,7 +69,7 @@ module.exports.initWebSocket = (server) => {
                             const user_id_update = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                             const message_update = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
                             if (user_id_update.rows[0].id == message_update.rows[0].sender_id) {
-                                const updated_message = await db.query(
+                                await db.query(
                                     `UPDATE messages
                                 SET content = $1
                                 WHERE id = $2;`,
