@@ -79,7 +79,7 @@ module.exports.initWebSocket = (server) => {
                                     `UPDATE messages
                                 SET content = $1
                                 WHERE id = $2;`,
-                                    [new_content, message_update])
+                                    [new_content, message_id])
                                 ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
