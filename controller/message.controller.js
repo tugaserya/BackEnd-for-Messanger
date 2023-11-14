@@ -37,7 +37,7 @@ class messageController {
             if (await UserChecker(login, password)) {
                 const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                 const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
-                if (user_id == message.rows[0].sender_id) {
+                if (user_id.rows == message.rows[0].sender_id) {
                     const updated_message = await db.query(
                         `UPDATE messages
                 SET content = $1
@@ -58,7 +58,7 @@ class messageController {
             if (await UserChecker(login, password)) {
                 const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                 const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
-                if (user_id == message.rows[0].sender_id || user_id == message.rows[0].recipient_id) {
+                if (user_id.rows == message.rows[0].sender_id || user_id.rows == message.rows[0].recipient_id) {
                     const message = await db.query(
                         `SELECT *
                  FROM messages
