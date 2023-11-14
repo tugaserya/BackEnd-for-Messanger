@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "nodemon index.js",
-    "start": "node index.js",
-    "pm2": "pm2 start index.js --watch --log logs.log"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
