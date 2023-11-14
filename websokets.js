@@ -106,7 +106,7 @@ module.exports.initWebSocket = (server) => {
                                     if (clients.has(recipient_id) && clients.has(sender_id)) {
                                         const recipient_ws = clients.get(recipient_id);
                                         const sender_ws = clients.get(sender_id);
-                                        recipient_ws.send(JSON.stringify({message_id, type: "delete_delete_message"}));
+                                        recipient_ws.send(JSON.stringify({message_id, type: "delete_message"}));
                                         sender_ws.send(JSON.stringify({ message_id, type: "delete_message" }))
                                     }
                                 }
