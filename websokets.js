@@ -42,11 +42,13 @@ module.exports.initWebSocket = (server) => {
         if (await UserChecker(login, password)) {
             ws.on('message', async (message) => {
                 try {
-                    const { chat_id, sender_id, recipient_id, content, time_of_day, type } = JSON.parse(message);
+                    const { type } = JSON.parse(message);
+                    const message_data = message
                     console.log(type)
                     switch (type) {
                         case 'new_message':
                             console.log('work 1')
+                            const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)
                             const time_stamp = new Date(time_of_day);
                             const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
                             clients.set(sender_id, ws);
@@ -58,7 +60,7 @@ module.exports.initWebSocket = (server) => {
                                 );
                                 const message_id = result.rows[0].id;
                                 const time_of_day = result.rows[0].time_stamp;
-                                console.log('work 3')
+                                console.log(clients.get(recipient_id))
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
                                     console.log('work 2')
@@ -69,6 +71,7 @@ module.exports.initWebSocket = (server) => {
                             }
                             break;
                         case 'update_message':
+                            const { message_id, new_content } = JSON.parse(message_data)
                             const user_id_update = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                             const message_update = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
                             if (user_id_update.rows[0].id == message_update.rows[0].sender_id) {
@@ -76,7 +79,7 @@ module.exports.initWebSocket = (server) => {
                                     `UPDATE messages
                                 SET content = $1
                                 WHERE id = $2;`,
-                                    [new_content, message_id])
+                                    [new_content, message_update])
                                 ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
@@ -85,31 +88,32 @@ module.exports.initWebSocket = (server) => {
                             }
                             break;
                         case 'archive_message':
+                            const { deleting_message_id } = JSON.parse(message_data)
                             const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
-                            const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+                            const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [deleting_message_id])
                             if (user_id.rows[0].id == message.rows[0].sender_id || user_id.rows[0].id == message.rows[0].recipient_id) {
                                 const message = await db.query(
                                     `SELECT *
                         FROM messages
                         WHERE id = $1;`,
-                                    [message_id])
+                                    [deleting_message_id])
                                 if (message.rows.length > 0) {
                                     await db.query(
                                         `INSERT INTO ARCHIVEmessages
                             SELECT *
                             FROM messages
                             WHERE id = $1;`,
-                                        [message_id])
+                                        [deleting_message_id])
                                     await db.query(
                                         `DELETE
                             FROM messages
                             WHERE id = $1;`,
-                                        [message_id])
+                                        [deleting_message_id])
                                     if (clients.has(recipient_id) && clients.has(sender_id)) {
                                         const recipient_ws = clients.get(recipient_id);
                                         const sender_ws = clients.get(sender_id);
-                                        recipient_ws.send(JSON.stringify({message_id, type: "delete_message"}));
-                                        sender_ws.send(JSON.stringify({ message_id, type: "delete_message" }))
+                                        recipient_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }));
+                                        sender_ws.send(JSON.stringify({ deleting_message_id, type: "delete_message" }))
                                     }
                                 }
                             } else { return }
