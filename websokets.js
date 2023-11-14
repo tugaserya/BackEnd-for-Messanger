@@ -59,6 +59,7 @@ module.exports.initWebSocket = (server) => {
                                 const time_of_day = result.rows[0].time_stamp;
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
+                                    console.log('work')
                                     recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
                                 }
                                 await getNotification(sender_id, recipient_id, content)
