@@ -75,12 +75,12 @@ module.exports.initWebSocket = (server) => {
                             const user_id_update = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                             const message_update = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
                             if (user_id_update.rows[0].id == message_update.rows[0].sender_id) {
-                                await db.query(
+                                const updated_message = await db.query(
                                     `UPDATE messages
                                 SET content = $1
-                                WHERE id = $2;`,
+                                WHERE id = $2 RETURNING *;`,
                                     [new_content, message_id])
-                                ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
+                                ws.send(JSON.stringify({updated_message , type: "updated_message"}))
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
                                     recipient_ws.send(JSON.stringify({message_id, chat_id, sender_id, recipient_id, new_content, time_of_day, type: "updated_message"}))
