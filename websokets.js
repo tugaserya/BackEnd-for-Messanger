@@ -46,6 +46,7 @@ module.exports.initWebSocket = (server) => {
                     console.log(type)
                     switch (type) {
                         case 'new_message':
+                            console.log('work 1')
                             const time_stamp = new Date(time_of_day);
                             const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
                             clients.set(sender_id, ws);
@@ -59,7 +60,7 @@ module.exports.initWebSocket = (server) => {
                                 const time_of_day = result.rows[0].time_stamp;
                                 if (clients.has(recipient_id)) {
                                     const recipient_ws = clients.get(recipient_id);
-                                    console.log('work')
+                                    console.log('work 2')
                                     recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
                                 }
                                 await getNotification(sender_id, recipient_id, content)
