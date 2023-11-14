@@ -1,10 +1,10 @@
 const WebSocket = require('ws');
 const { Server } = WebSocket;
-const db =require('./db')
+const db = require('./db')
 const moment = require('moment')
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json")
-const {UserChecker} = require("./userChecker");
+const { UserChecker } = require("./userChecker");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -39,33 +39,85 @@ module.exports.initWebSocket = (server) => {
     wss.on('connection', async (ws, req) => {
         const login = decodeURIComponent(req.url.split(/login=|&password/)[1])
         const password = req.url.split('&password=')[1]
-        if(await UserChecker(login, password)){
+        if (await UserChecker(login, password)) {
 
-        ws.on('message', async (message) => {
-            try {
-                const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message);
-                const time_stamp = new Date(time_of_day);
-                const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
-                clients.set(sender_id, ws);
-                if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
-                    const result = await db.query(
-                        `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
-                        values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
-                        [chat_id, sender_id, recipient_id, content, time_stamp]
-                    );
-                    const message_id = result.rows[0].id;
-                    const time_of_day = result.rows[0].time_stamp;
-                    if (clients.has(recipient_id)) {
-                        const recipient_ws = clients.get(recipient_id);
-                        recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+            ws.on('message', async (message) => {
+                try {
+                    const { chat_id, sender_id, recipient_id, content, time_of_day, type } = JSON.parse(message);
+
+                    switch (type) {
+                        case 'new_message':
+                            const time_stamp = new Date(time_of_day);
+                            const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
+                            clients.set(sender_id, ws);
+                            if (UserSearh.rows.length == 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
+                                const result = await db.query(
+                                    `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp)
+                                values ($1, $2, $3, $4, $5) RETURNING id, time_stamp;`,
+                                    [chat_id, sender_id, recipient_id, content, time_stamp]
+                                );
+                                const message_id = result.rows[0].id;
+                                const time_of_day = result.rows[0].time_stamp;
+                                if (clients.has(recipient_id)) {
+                                    const recipient_ws = clients.get(recipient_id);
+                                    recipient_ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+                                }
+                                await getNotification(sender_id, recipient_id, content)
+                                ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+                            }
+                            break;
+                        case 'update_message':
+                            const user_id_update = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
+                            const message_update = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+                            if (user_id_update.rows[0].id == message_update.rows[0].sender_id) {
+                                const updated_message = await db.query(
+                                    `UPDATE messages
+                                SET content = $1
+                                WHERE id = $2
+                                RETURNING *;`,
+                                    [new_content, message_id])
+                                ws.send(JSON.stringify(updated_message.rows))
+                                if (clients.has(recipient_id)) {
+                                    const recipient_ws = clients.get(recipient_id);
+                                    recipient_ws.send(JSON.stringify(updated_message.rows));
+                                }
+                            }
+                            break;
+                        case 'archive_message':
+                            const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
+                            const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+                            if (user_id.rows[0].id == message.rows[0].sender_id || user_id.rows[0].id == message.rows[0].recipient_id) {
+                                const message = await db.query(
+                                    `SELECT *
+                        FROM messages
+                        WHERE id = $1;`,
+                                    [message_id])
+                                if (message.rows.length > 0) {
+                                    await db.query(
+                                        `INSERT INTO ARCHIVEmessages
+                            SELECT *
+                            FROM messages
+                            WHERE id = $1;`,
+                                        [message_id])
+                                    await db.query(
+                                        `DELETE
+                            FROM messages
+                            WHERE id = $1;`,
+                                        [message_id])
+                                    if (clients.has(recipient_id) && clients.has(sender_id)) {
+                                        const recipient_ws = clients.get(recipient_id);
+                                        const sender_ws = clients.get(sender_id);
+                                        recipient_ws.send(JSON.stringify({ status: 200 }));
+                                        sender_ws.send(JSON.stringify({ status: 200 }))
+                                    }
+                                }
+                            } else { return }
                     }
-                    await getNotification(sender_id, recipient_id, content)
-                    ws.send(JSON.stringify({ message_id, chat_id, sender_id, recipient_id, content, time_of_day }));
+                } catch (error) {
+                    console.error(error);
                 }
-            } catch (error) {
-                console.error(error);
-            }
-        }) } else { return }
+            })
+        } else { return }
     })
 }
 
