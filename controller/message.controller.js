@@ -58,6 +58,7 @@ class messageController {
             if (await UserChecker(login, password)) {
                 const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
                 const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+                console.log(user_id.rows[0])
                 if (user_id.rows[0] == message.rows[0].sender_id || user_id.rows[0] == message.rows[0].recipient_id) {
                     const message = await db.query(
                         `SELECT *
