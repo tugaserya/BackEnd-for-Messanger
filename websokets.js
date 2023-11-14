@@ -43,7 +43,7 @@ module.exports.initWebSocket = (server) => {
             ws.on('message', async (message) => {
                 try {
                     const { chat_id, sender_id, recipient_id, content, time_of_day, type } = JSON.parse(message);
-                    console.log(message)
+                    console.log(type)
                     switch (type) {
                         case 'new_message':
                             const time_stamp = new Date(time_of_day);
