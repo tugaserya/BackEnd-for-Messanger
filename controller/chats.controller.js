@@ -49,29 +49,29 @@ class ChatsController {
     
             const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
     
-            const chats = users.rows.map(user => ({
-                "chat_id": chatUsers[user.id],
-                "id": user.id,
-                "user_name": user.user_name
-            }));
-            const lastMessages = await Promise.all(chats.map(async (chat) => {
+            let chatsWithLastMessage = [];
+            for (let user of users.rows) {
+                const chat = {
+                    "chat_id": chatUsers[user.id],
+                    "id": user.id,
+                    "user_name": user.user_name
+                };
                 const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`,
                     [chat.chat_id]);
-                return messageSearcher.rows[0];
-            }));
-            
-            let chatsWithLastMessage = chats.map((chat, index) => {
-                let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
-                let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
-                if (lastMessage.length > 200) {
-                    lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
+                const lastMessageInfo = messageSearcher.rows[0];
+                if (lastMessageInfo || chat.id === id) {
+                    let lastMessage = lastMessageInfo ? lastMessageInfo.content : '';
+                    let lastMessageTime = lastMessageInfo ? lastMessageInfo.time_stamp : '';
+                    if (lastMessage.length > 200) {
+                        lastMessage = lastMessage.substring(0, 30) + '...';
+                    }
+                    chatsWithLastMessage.push({
+                        ...chat,
+                        last_message: lastMessage,
+                        last_message_time: lastMessageTime
+                    });
                 }
-                return {
-                    ...chat,
-                    last_message: lastMessage,
-                    last_message_time: lastMessageTime
-                };
-            }).filter(chat => chat.last_message !== '' || chat.id === id);
+            }
             chatsWithLastMessage.sort((a, b) => {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
@@ -81,6 +81,7 @@ class ChatsController {
             console.error('ошибка получения чатов ', err);
         }
     }
+    
     
 
 // TODO: доделать
