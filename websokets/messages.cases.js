@@ -1,7 +1,7 @@
 const db = require('../db')
 const moment = require('moment')
 
-class MessageCases{
+class MessageCases {
 
 async NewMessage(message_data) {
     const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)

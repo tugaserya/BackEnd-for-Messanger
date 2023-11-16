@@ -73,40 +73,6 @@ class ChatsController {
             console.error('ошибка получения чатов ', err);
         }
     }
-    
-
-// TODO: доделать
-    // async archiveChat(req, res) {
-    //     const { chat_id } = req.body;
-    //     try {
-    //         const chat = await db.query(
-    //             `SELECT * FROM chats WHERE id = $1;`,
-    //             [chat_id])
-    //         if (chat.rows.length > 0) {
-    //             // Архивирование всех сообщений из чата
-    //             await db.query(
-    //                 `INSERT INTO ARCHIVEmessages SELECT * FROM messages WHERE chat_id = $1;`,
-    //                 [chat_id])
-    //             await db.query(
-    //                 `DELETE FROM messages WHERE chat_id = $1;`,
-    //                 [chat_id])
-
-    //             // Архивирование самого чата
-    //             await db.query(
-    //                 `INSERT INTO ARCHIVEchats SELECT * FROM chats WHERE id = $1;`,
-    //                 [chat_id])
-    //             await db.query(
-    //                 `DELETE FROM chats WHERE id = $1;`,
-    //                 [chat_id])
-
-    //             res.status(200).json({ message: "Чат успешно архивирован" })
-    //         } else {
-    //             res.status(404).json({ message: "Чат не найден" })
-    //         }
-    //     } catch (error) {
-    //         console.error("ошибка при удалении и архивации чата ", err)
-    //     }
-    // }
 }
 
 module.exports = new ChatsController()

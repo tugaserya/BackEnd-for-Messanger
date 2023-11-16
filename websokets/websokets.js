@@ -6,6 +6,7 @@ const serviceAccount = require("../serviceAccountKey.json")
 const { UserChecker } = require("../userChecker");
 
 const MessageCases = require('./messages.cases') 
+const ChatCases = require('./chat.cases')
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -96,6 +97,19 @@ module.exports.initWebSocket = (server) => {
                             }
                         break;
                         case 'archive_chat':
+                            const archived_chat = await ChatCases.ArchiveChat(message_data)
+                            if(clients.has(String(archived_chat.rows[0].user_id_1)) && clients.has(String(archived_chat.rows[0].user_id_2))){
+                                const user_1_ws = clients.get(String(archived_chat.rows[0].user_id_1))
+                                user_1_ws.send(JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"}))
+                                const user_2_ws = clients.get(String(archived_chat.rows[0].user_id_2))
+                                user_2_ws.send(JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"}))
+                            } else if(clients.has(String(archived_chat.rows[0].user_id_1))){
+                                const user_1_ws = clients.get(String(archived_chat.rows[0].user_id_1))
+                                user_1_ws.send(JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"}))
+                            } else if(clients.has(String(archived_chat.rows[0].user_id_2))){
+                                const user_2_ws = clients.get(String(archived_chat.rows[0].user_id_2))
+                                user_2_ws.send(JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"}))
+                            }
                         break;
                         }
                 } catch (error) {
