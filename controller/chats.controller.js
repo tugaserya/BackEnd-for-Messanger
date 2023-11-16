@@ -53,7 +53,7 @@ class ChatsController {
             for (let user of users.rows) {
                 const chatId = chatUsers[user.id];
                 const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`, [chatId]);
-                if (messageSearcher.rows.length > 0 || user.id === id) {
+                if (messageSearcher.rows.length > 0 || user.id !== id) {
                     chats.push({
                         "chat_id": chatId,
                         "id": user.id,
