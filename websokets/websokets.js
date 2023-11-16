@@ -46,6 +46,7 @@ module.exports.initWebSocket = (server) => {
             ws.on('message', async (message) => {
                 try {
                     const { type } = JSON.parse(message);
+                    console.log(type+" - type");
                     const message_data = message
                     switch (type) {
                         case 'new_message':
