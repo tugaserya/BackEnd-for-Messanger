@@ -30,50 +30,53 @@ class ChatsController {
         try {
             if(await UserChecker(login, password)){
             const idSearcher = await db.query(`SELECT id FROM users WHERE id = $1`, [id]);
-
+    
             if (idSearcher.rows.length === 0) {
                 return res.status(404).json({ message: "Your account doesn't exist!" });
             }
-
+    
             const chatSearcher = await db.query(`SELECT * FROM chats where user_id_1 = $1 OR user_id_2 = $1;`, [id]);
-
+    
             if (chatSearcher.rows.length === 0) {
                 return res.status(404).json({ message: "Not found any chats" });
             }
-
+    
             const chatUsers = chatSearcher.rows.reduce((acc, chat) => {
                 const userId = chat.user_id_1 === id ? chat.user_id_2 : chat.user_id_1;
                 acc[userId] = chat.id;
                 return acc;
             }, {});
-
+    
             const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
-
+    
             const chats = users.rows.map(user => ({
                 "chat_id": chatUsers[user.id],
                 "id": user.id,
                 "user_name": user.user_name
             }));
-
-            // Добавьте этот код для получения последнего сообщения для каждого чата
             const lastMessages = await Promise.all(chats.map(async (chat) => {
                 const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`,
                     [chat.chat_id]);
                 return messageSearcher.rows[0];
             }));
-
-            const chatsWithLastMessage = chats.map((chat, index) => {
+            
+            let chatsWithLastMessage = chats.map((chat, index) => {
+                if (lastMessages[index]){
+                
                 let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
                 let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
                 if (lastMessage.length > 200) {
-                    lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
+                    lastMessage = lastMessage.substring(0, 30) + '...';
                 }
                 return {
                     ...chat,
                     last_message: lastMessage,
                     last_message_time: lastMessageTime
                 };
+                }
             });
+            // Фильтруем чаты, где пользователь является user_id_2 и нет сообщений
+            chatsWithLastMessage = chatsWithLastMessage.filter(chat => chat !== undefined);
             chatsWithLastMessage.sort((a, b) => {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
@@ -83,6 +86,7 @@ class ChatsController {
             console.error('ошибка получения чатов ', err);
         }
     }
+    
 
 // TODO: доделать
     // async archiveChat(req, res) {
