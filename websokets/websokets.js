@@ -49,20 +49,19 @@ module.exports.initWebSocket = (server) => {
                     const message_data = message
                     switch (type) {
                         case 'new_message':
-                            const { sender_id, recipient_id, content } = JSON.parse(message_data)
                             const NewMessage = await MessageCases.NewMessage(message_data)
-                            if (clients.has(String(recipient_id))) {
-                                const recipient_ws = clients.get(String(recipient_id));
-                                recipient_ws.send(NewMessage);
+                            if (clients.has(String(NewMessage.recipient_id))) {
+                                const recipient_ws = clients.get(String(NewMessage.recipient_id));
+                                recipient_ws.send(JSON.stringify(NewMessage));
                             }
-                            await getNotification(sender_id, recipient_id, content)
-                            ws.send(NewMessage);
+                            await getNotification(NewMessage.sender_id, NewMessage.recipient_id, NewMessage.content)
+                            ws.send(JSON.stringify(NewMessage));
                             break;
                         case 'update_message':
                             const updated_message = await MessageCases.UpdateMessage(message_data, login)
-                            if (clients.has(String(message_update.rows[0].recipient_id))) {
-                                const recipient_ws = clients.get(String(message_update.rows[0].recipient_id));
-                                recipient_ws.send(updated_message)
+                            if (clients.has(String(updated_message.recipient_id))) {
+                                const recipient_ws = clients.get(String(updated_message.recipient_id));
+                                recipient_ws.send(JSON.stringify(updated_message))
                             }
                             ws.send(updated_message)
                             break;

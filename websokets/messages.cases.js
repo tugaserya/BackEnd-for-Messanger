@@ -13,7 +13,7 @@ async NewMessage(message_data) {
             values ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
             [chat_id, sender_id, recipient_id, content, time_stamp, false, false]
         );
-        const message_data = JSON.stringify({
+        const message_data = {
             message_id: result.rows[0].id,
             chat_id,
             sender_id,
@@ -22,7 +22,7 @@ async NewMessage(message_data) {
             time_of_day: result.rows[0].time_stamp,
             is_readed: result.rows[0].is_readed,
             is_edited: result.rows[0].is_edited,
-            type: "new_message"})
+            type: "new_message"}
             return message_data;
         }
     }
@@ -38,13 +38,15 @@ async UpdateMessage(message_data, login){
         WHERE id = $2 RETURNING *;`,
         [new_content, message_id])
 
-        const message_data = JSON.stringify({message_id: updated_message.rows[0].id,
+        const message_data = {
+            message_id: updated_message.rows[0].id,
             sender_id: updated_message.rows[0].sender_id,
+            recipient_id: updated_message.rows[0].recipient_id,
             chat_id: updated_message.rows[0].chat_id,
             time_of_day: updated_message.rows[0].time_stamp,
             new_content: updated_message.rows[0].content,
             is_edited: updated_message.rows[0].is_edited,
-            type: "updated_message"})
+            type: "updated_message"}
         return message_data
         }
     }
