@@ -71,6 +71,7 @@ module.exports.initWebSocket = (server) => {
                             if (clients.has(String(message.rows[0].recipient_id)) && clients.has(String(message.rows[0].sender_id))) {
                                 const recipient_ws = clients.get(String(message.rows[0].recipient_id));
                                 const sender_ws = clients.get(String(message.rows[0].sender_id));
+                                console.log('work ' + String(message.rows[0].sender_id));
                                 recipient_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }));
                                 sender_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))}
                             break;
