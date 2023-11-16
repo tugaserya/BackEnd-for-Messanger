@@ -59,11 +59,11 @@ class ChatsController {
                 const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`,
                     [chat.chat_id]);
                 const lastMessageInfo = messageSearcher.rows[0];
-                if (lastMessageInfo || chat.id === id) {
+                if (lastMessageInfo || chatSearcher.rows.find(chat => chat.user_id_1 === id && chat.id === chat.chat_id)) {
                     let lastMessage = lastMessageInfo ? lastMessageInfo.content : '';
                     let lastMessageTime = lastMessageInfo ? lastMessageInfo.time_stamp : '';
                     if (lastMessage.length > 200) {
-                        lastMessage = lastMessage.substring(0, 30) + '...';
+                        lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
                     }
                     chatsWithLastMessage.push({
                         ...chat,
