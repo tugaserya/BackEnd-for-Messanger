@@ -53,6 +53,7 @@ async ArchiveMessage(message_data, login){
     const { message_id } = JSON.parse(message_data)
     const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
     const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+    console.log(message)
     if (user_id.rows[0].id == message.rows[0].sender_id || user_id.rows[0].id == message.rows[0].recipient_id) {
         const message = await db.query(
             `SELECT *
