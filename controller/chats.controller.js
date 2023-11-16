@@ -61,8 +61,6 @@ class ChatsController {
             }));
             
             const chatsWithLastMessage = chats.map((chat, index) => {
-                if (lastMessages.rows[index].length > 0){
-                
                 let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
                 let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
                 if (lastMessage.length > 200) {
@@ -73,7 +71,6 @@ class ChatsController {
                     last_message: lastMessage,
                     last_message_time: lastMessageTime
                 };
-                }
             });
             chatsWithLastMessage.sort((a, b) => {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
