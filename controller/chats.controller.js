@@ -61,22 +61,17 @@ class ChatsController {
             }));
             
             let chatsWithLastMessage = chats.map((chat, index) => {
-                if (lastMessages[index]){
-                
                 let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
                 let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
                 if (lastMessage.length > 200) {
-                    lastMessage = lastMessage.substring(0, 30) + '...';
+                    lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
                 }
                 return {
                     ...chat,
                     last_message: lastMessage,
                     last_message_time: lastMessageTime
                 };
-                }
-            });
-            // Фильтруем чаты, где пользователь является user_id_2 и нет сообщений
-            chatsWithLastMessage = chatsWithLastMessage.filter(chat => chat !== undefined);
+            }).filter(chat => chat.last_message !== '' || chat.id === id);
             chatsWithLastMessage.sort((a, b) => {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
