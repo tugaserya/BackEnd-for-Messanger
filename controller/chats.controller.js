@@ -12,7 +12,7 @@ class ChatsController {
                 const ChatChecker = await db.query(
                     `SELECT * FROM chats WHERE (user_id_1 = $1 AND user_id_2 = $2) OR (user_id_1 = $2 AND user_id_2 = $1);`,
                     [user_id_1, user_id_2])
-                if (ChatChecker.rows.length > 0) {//создание чата с другим пользователем с поверкой на существование чата с ним
+                if (ChatChecker.rows.length > 0) {
                     res.status(409).json({ message: 'This chat alredy exist!' })
                 } else {
                     await db.query(`INSERT INTO chats (user_id_1, user_id_2) values ($1, $2)`, [user_id_1, user_id_2])

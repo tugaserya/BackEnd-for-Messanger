@@ -7,7 +7,7 @@ class UserController {
         const { user_name, login, password } = req.body
         try {
         const loginChecker = await db.query(`SELECT login FROM users where login = $1`, [login])
-        if (loginChecker.rows.length > 0) { // Проверка на существование пользователя
+        if (loginChecker.rows.length > 0) {
             res.status(409).json({ message: 'This user already exists!' })
         } else {
             const hashedPassword = await bcrypt.hash(password, 10)
@@ -24,7 +24,7 @@ class UserController {
         const {login, password, FCMtoken} = req.body;
         try {
             const userData = await db.query('SELECT * FROM users WHERE login = $1', [login]);
-            if (userData.rows.length > 0) {//проверка на валидность по логину, а затем паролю
+            if (userData.rows.length > 0) {
                 const validPassword = await bcrypt.compare(password, userData.rows[0].password);
                 if (validPassword) {
                     await db.query(`UPDATE users SET FCMtoken = $1 WHERE login = $2;`,[FCMtoken, login])
@@ -60,7 +60,6 @@ class UserController {
             `SELECT * FROM users where user_name LIKE $1`, [
             `%${user_name}%`]
         )
-        //поиск пользователя по частичному или полному совпадению его имени(может быть несколько совпадений)
         if (Usersearcher.rows.length > 0){
         const users = Usersearcher.rows.map(user => ({
             "id": user.id,

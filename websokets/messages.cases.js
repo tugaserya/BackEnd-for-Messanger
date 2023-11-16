@@ -51,6 +51,15 @@ async UpdateMessage(message_data, login){
         }
     }
 
+async IsReadedMessage (message_data){
+    const { message_id } = JSON.parse(message_data)
+    const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
+    if(message.rows.length > 0 && message.rows[0].is_readed == false){
+        await db.query(`UPDATE messages SET is_readed = true WHERE id = $1`, [message_id])
+        return message
+    }
+}
+
 async ArchiveMessage(message_data, login){
     const { deleting_message_id } = JSON.parse(message_data)
     const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])

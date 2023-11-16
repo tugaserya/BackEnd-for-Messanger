@@ -81,6 +81,19 @@ module.exports.initWebSocket = (server) => {
                             }
                             break;
                         case 'is_readed_message':
+                            const readed_meassage = await MessageCases.IsReadedMessage(message_data)
+                            if(clients.has(String(readed_meassage.rows[0].recipient_id)) && clients.has(String(readed_meassage.rows[0].sender_id))) {
+                                const recipient_ws = clients.get(String(readed_meassage.rows[0].recipient_id))
+                                recipient_ws.send(JSON.stringify({message_id: readed_meassage.rows[0].id, is_readed: readed_meassage.rows[0].is_readed, type: "readed_message"}))
+                                const sender_ws = clients.get(String(readed_meassage.rows[0].sender_id))
+                                sender_ws.send(JSON.stringify({message_id: readed_meassage.rows[0].id, is_readed: readed_meassage.rows[0].is_readed, type: "readed_message"}))
+                            } else if(clients.has(String(readed_meassage.rows[0].recipient_id))){
+                                const recipient_ws = clients.get(String(readed_meassage.rows[0].recipient_id))
+                                recipient_ws.send(JSON.stringify({message_id: readed_meassage.rows[0].id, is_readed: readed_meassage.rows[0].is_readed, type: "readed_message"}))
+                            } else if(clients.has(String(readed_meassage.rows[0].sender_id))){
+                                const sender_ws = clients.get(String(readed_meassage.rows[0].sender_id))
+                                sender_ws.send(JSON.stringify({message_id: readed_meassage.rows[0].id, is_readed: readed_meassage.rows[0].is_readed, type: "readed_message"}))
+                            }
                         break;
                         case 'archive_chat':
                         break;
