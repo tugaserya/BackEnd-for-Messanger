@@ -49,12 +49,13 @@ module.exports.initWebSocket = (server) => {
                     const message_data = message
                     switch (type) {
                         case 'new_message':
+                            const { sender_id, recipient_id, content } = JSON.parse(message_data)
                             const NewMessage = await MessageCases.NewMessage(message_data)
-                            if (clients.has(String(NewMessage.recipient_id))) {
-                                const recipient_ws = clients.get(String(NewMessage.recipient_id));
+                            if (clients.has(String(recipient_id))) {
+                                const recipient_ws = clients.get(String(recipient_id));
                                 recipient_ws.send(NewMessage);
                             }
-                            await getNotification(NewMessage.sender_id, NewMessage.recipient_id, NewMessage.content)
+                            await getNotification(sender_id, recipient_id, content)
                             ws.send(NewMessage);
                             break;
                         case 'update_message':
