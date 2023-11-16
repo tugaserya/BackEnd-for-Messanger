@@ -35,13 +35,16 @@ class ChatsController {
                 return res.status(404).json({ message: "Your account doesn't exist!" });
             }
     
-            const chatSearcher = await db.query(`SELECT * FROM chats where user_id_1 = $1 OR user_id_2 = $1;`, [id]);
+            let chatSearcher = await db.query(`SELECT * FROM chats where user_id_1 = $1 OR user_id_2 = $1;`, [id]);
     
             if (chatSearcher.rows.length === 0) {
                 return res.status(404).json({ message: "Not found any chats" });
             }
     
-            const chatUsers = chatSearcher.rows.reduce((acc, chat) => {
+            // Фильтруем чаты, где пользователь является user_id_1
+            chatSearcher = chatSearcher.rows.filter(chat => chat.user_id_1 === id);
+    
+            const chatUsers = chatSearcher.reduce((acc, chat) => {
                 const userId = chat.user_id_1 === id ? chat.user_id_2 : chat.user_id_1;
                 acc[userId] = chat.id;
                 return acc;
@@ -49,29 +52,29 @@ class ChatsController {
     
             const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
     
-            let chatsWithLastMessage = [];
-            for (let user of users.rows) {
-                const chat = {
-                    "chat_id": chatUsers[user.id],
-                    "id": user.id,
-                    "user_name": user.user_name
-                };
+            const chats = users.rows.map(user => ({
+                "chat_id": chatUsers[user.id],
+                "id": user.id,
+                "user_name": user.user_name
+            }));
+            const lastMessages = await Promise.all(chats.map(async (chat) => {
                 const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`,
                     [chat.chat_id]);
-                const lastMessageInfo = messageSearcher.rows[0];
-                if (lastMessageInfo || chatSearcher.rows.find(chat => chat.user_id_1 === id && chat.id === chat.chat_id)) {
-                    let lastMessage = lastMessageInfo ? lastMessageInfo.content : '';
-                    let lastMessageTime = lastMessageInfo ? lastMessageInfo.time_stamp : '';
-                    if (lastMessage.length > 200) {
-                        lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
-                    }
-                    chatsWithLastMessage.push({
-                        ...chat,
-                        last_message: lastMessage,
-                        last_message_time: lastMessageTime
-                    });
+                return messageSearcher.rows[0];
+            }));
+            
+            let chatsWithLastMessage = chats.map((chat, index) => {
+                let lastMessage = lastMessages[index] ? lastMessages[index].content : '';
+                let lastMessageTime = lastMessages[index] ? lastMessages[index].time_stamp : '';
+                if (lastMessage.length > 200) {
+                    lastMessage = lastMessage.substring(0, 30) + '...'; // Обрезаем сообщение до максимальной длины
                 }
-            }
+                return {
+                    ...chat,
+                    last_message: lastMessage,
+                    last_message_time: lastMessageTime
+                };
+            });
             chatsWithLastMessage.sort((a, b) => {
                 return new Date(b.last_message_time) - new Date(a.last_message_time);
             });
@@ -81,6 +84,7 @@ class ChatsController {
             console.error('ошибка получения чатов ', err);
         }
     }
+    
     
     
 
