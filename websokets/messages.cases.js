@@ -4,6 +4,7 @@ const db = require('../db')
 class MessageCases{
 
 async NewMessage(message_data) {
+    console.log("work")
     const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)
     const time_stamp = new Date(time_of_day);
     const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);

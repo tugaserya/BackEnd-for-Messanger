@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 const serviceAccount = require("../serviceAccountKey.json")
 const { UserChecker } = require("../userChecker");
 
-const { MessageCases } = require('./messages.cases') 
+const MessageCases = require('./messages.cases') 
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
