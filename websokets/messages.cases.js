@@ -50,28 +50,27 @@ async UpdateMessage(message_data, login){
     }
 
 async ArchiveMessage(message_data, login){
-    const { message_id } = JSON.parse(message_data)
+    const { deleting_message_id } = JSON.parse(message_data)
     const user_id = await db.query(`SELECT id FROM users WHERE login = $1;`, [login])
-    const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
-    console.log(message_id + " "+ message.rows)
+    const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [deleting_message_id])
     if (user_id.rows[0].id == message.rows[0].sender_id || user_id.rows[0].id == message.rows[0].recipient_id) {
         const message = await db.query(
             `SELECT *
             FROM messages
             WHERE id = $1;`,
-            [message_id])
+            [deleting_message_id])
         if (message.rows.length > 0) {
             await db.query(
                 `INSERT INTO ARCHIVEmessages
                 SELECT *
                 FROM messages
                 WHERE id = $1;`,
-                [message_id])
+                [deleting_message_id])
             await db.query(
                 `DELETE
                 FROM messages
                 WHERE id = $1;`,
-                [message_id])
+                [deleting_message_id])
             }
         return message
         } else { return }
