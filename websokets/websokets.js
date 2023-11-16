@@ -61,9 +61,9 @@ module.exports.initWebSocket = (server) => {
                             const updated_message = await MessageCases.UpdateMessage(message_data, login)
                             if (clients.has(String(updated_message.recipient_id))) {
                                 const recipient_ws = clients.get(String(updated_message.recipient_id));
-                                recipient_ws.send(JSON.stringify(updated_message))
+                                recipient_ws.send(JSON.stringify(JSON.stringify(updated_message)))
                             }
-                            ws.send(updated_message)
+                            ws.send(JSON.stringify(updated_message))
                             break;
                         case 'archive_message':
                             const message = await MessageCases.ArchiveMessage(message_data, login)
