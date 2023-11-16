@@ -9,8 +9,6 @@ CREATE TABLE users
     FCMtoken VARCHAR(255) NOT NULL
 );
 
-
-
 CREATE TABLE chats
 (
     id        SERIAL PRIMARY KEY,
@@ -33,6 +31,9 @@ CREATE TABLE messages
     FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
 
+ALTER TABLE messages ADD is_readed BOOLEAN NOT NULL;
+ALTER TABLE messages ADD is_edited BOOLEAN NOT NULL;
+
 CREATE TABLE ARCHIVEchats
 (
     id        SERIAL PRIMARY KEY,
@@ -54,4 +55,8 @@ CREATE TABLE ARCHIVEmessages
     FOREIGN KEY (sender_id) REFERENCES users (id),
     FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
+
+ALTER TABLE ARCHIVEmessages ADD is_readed BOOLEAN;
+ALTER TABLE ARCHIVEmessages ADD is_edited BOOLEAN;
+
 

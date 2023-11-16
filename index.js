@@ -1,7 +1,7 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const wsModule = require('./websokets')
+const wsModule = require('./websokets/websokets')
 
 
 const PORT = process.env.PORT || 4200;
