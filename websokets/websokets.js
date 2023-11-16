@@ -68,12 +68,18 @@ module.exports.initWebSocket = (server) => {
                             break;
                         case 'archive_message':
                             const message = await MessageCases.ArchiveMessage(message_data, login)
-                            console.log(clients.has(String(message.rows[0].recipient_id)) + " "+ clients.has(String(message.rows[0].sender_id)));
                             if (clients.has(String(message.rows[0].recipient_id)) && clients.has(String(message.rows[0].sender_id))) {
-                                const recipient_ws = clients.get(String(message.rows[0].recipient_id));
+                                const recipient_ws = clients.get(String(message.rows[0].recipient_id))
+                                const sender_ws = clients.get(String(message.rows[0].sender_id))
+                                recipient_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))
+                                sender_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))
+                            } else if(clients.has(String(message.rows[0].recipient_id))){
+                                const recipient_ws = clients.get(String(message.rows[0].recipient_id))
+                                recipient_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))
+                            } else if (clients.has(String(message.rows[0].sender_id))){
                                 const sender_ws = clients.get(String(message.rows[0].sender_id));
-                                recipient_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }));
-                                sender_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))}
+                                sender_ws.send(JSON.stringify({ message_id: deleting_message_id, type: "delete_message" }))
+                            }
                             break;
                         case 'is_readed_message':
                         break;
