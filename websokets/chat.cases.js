@@ -57,15 +57,14 @@ async UpdateChat(message_data) {
             [chat_id]);
             const not_readed_messages = await db.query(`SELECT * FROM messages WHERE chat_id = $1 AND is_readed = false AND recipient_id = $2;`,
             [chat_id, user_id])
-            const update_chat = [];
-            update_chat.push({
+            const update_chat = {
                 "chat_id": chat_id,
                 "id": users.rows[0].id,
                 "user_name": users.rows[0].user_name,
                 "last_message": messageSearcher.rows[0] ? messageSearcher.rows[0].content : '',
                 "last_message_time": messageSearcher.rows[0] ? messageSearcher.rows[0].time_stamp : '',
                 "not_readed_messages": not_readed_messages.rows.length
-                });
+                };
             return update_chat
         }
     }catch(err){
