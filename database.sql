@@ -38,9 +38,7 @@ CREATE TABLE ARCHIVEchats
 (
     id        SERIAL PRIMARY KEY,
     user_id_1 INTEGER NOT NULL,
-    user_id_2 INTEGER NOT NULL,
-    FOREIGN KEY (user_id_1) REFERENCES users (id),
-    FOREIGN KEY (user_id_2) REFERENCES users (id)
+    user_id_2 INTEGER NOT NULL
 );
 
 CREATE TABLE ARCHIVEmessages
@@ -50,10 +48,7 @@ CREATE TABLE ARCHIVEmessages
     sender_id    INTEGER   NOT NULL,
     recipient_id INTEGER   NOT NULL,
     content      TEXT      NOT NULL,
-    time_stamp   TIMESTAMP NOT NULL,
-    FOREIGN KEY (chat_id) REFERENCES chats (id),
-    FOREIGN KEY (sender_id) REFERENCES users (id),
-    FOREIGN KEY (recipient_id) REFERENCES users (id)
+    time_stamp   TIMESTAMP NOT NULL
 );
 
 ALTER TABLE ARCHIVEmessages ADD is_readed BOOLEAN;
