@@ -8,6 +8,13 @@ async GetChats (message_data){
         const chatSearcher = await db.query(
             `SELECT * FROM chats WHERE user_id_1 = $1 OR user_id_2 = $1;`,
             [user_id])
+        if (chatSearcher.rows.length == 0){
+            const chats = []
+            return {
+                chats,
+                "type": "get_chats"
+            }
+        }
         const chatUsers = chatSearcher.rows.reduce((acc, chat) => {
         const userId = chat.user_id_1 === user_id ? chat.user_id_2 : chat.user_id_1;
                 acc[userId] = chat.id;
