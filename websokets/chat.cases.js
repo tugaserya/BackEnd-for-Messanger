@@ -44,6 +44,7 @@ async UpdateChat(message_data) {
         const { chat_id, user_id } = JSON.parse(message_data)
         const chat = await db.query(`SELECT * FROM chats WHERE id = $1;`, [chat_id])
         if(chat.rows.length > 0 && (chat.rows[0].user_id_1 == user_id || chat.rows[0].user_id_2 == user_id)){
+            console.log("work");
             const chatUsers = chatSearcher.rows.reduce((acc, chat) => {
                 const userId = chat.user_id_1 === user_id ? chat.user_id_2 : chat.user_id_1;
                         acc[userId] = chat.id;
