@@ -111,6 +111,10 @@ module.exports.initWebSocket = (server) => {
                                 user_2_ws.send(JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"}))
                             }
                         break;
+                        case 'get_chats':
+                            const chats_list = await ChatCases.GetChats(message_data)
+                            ws.send(chats_list)
+                        break;
                         }
                 } catch (error) {
                     console.error(error);

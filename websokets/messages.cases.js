@@ -79,21 +79,14 @@ async ArchiveMessage(message_data, login){
     const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [deleting_message_id])
     if (user_id.rows[0].id == message.rows[0].sender_id || user_id.rows[0].id == message.rows[0].recipient_id) {
         const message = await db.query(
-            `SELECT *
-            FROM messages
-            WHERE id = $1;`,
+            `SELECT * FROM messages WHERE id = $1;`,
             [deleting_message_id])
         if (message.rows.length > 0) {
             await db.query(
-                `INSERT INTO ARCHIVEmessages
-                SELECT *
-                FROM messages
-                WHERE id = $1;`,
+                `INSERT INTO ARCHIVEmessages SELECT * FROM messages WHERE id = $1;`,
                 [deleting_message_id])
             await db.query(
-                `DELETE
-                FROM messages
-                WHERE id = $1;`,
+                `DELETE FROM messages WHERE id = $1;`,
                 [deleting_message_id])
             }
         return message
