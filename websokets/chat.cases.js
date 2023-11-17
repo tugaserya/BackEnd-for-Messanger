@@ -16,7 +16,7 @@ async GetChats (message_data){
         const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
         const chats = [];
         for (let user of users.rows) {
-            const chatId = chatUsers[user.user_id];
+            const chatId = chatUsers[user.id];
             const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`, [chatId]);
             const not_readed_messages = await db.query(`SELECT * FROM messages WHERE chat_id = $1 AND is_readed = false;`, [chatId])
             if (messageSearcher.rows.length > 0 || user.id !== user_id) {
@@ -24,8 +24,8 @@ async GetChats (message_data){
                     "chat_id": chatId,
                     "id": user.id,
                     "user_name": user.user_name,
-                    "last_message": messageSearcher.rows[0] ? messageSearcher.rows[0].content : '',
-                    "last_message_time": messageSearcher.rows[0] ? messageSearcher.rows[0].time_stamp : '',
+                    "last_message": messageSearcher.rows[0].content,
+                    "last_message_time": messageSearcher.rows[0].time_stamp,
                     "not_readed_messages": not_readed_messages.rows.length
                     });
                 }
