@@ -60,7 +60,8 @@ async UpdateChat(message_data) {
                 "user_name": users.rows[0].user_name,
                 "last_message": messageSearcher.rows[0] ? messageSearcher.rows[0].content : '',
                 "last_message_time": messageSearcher.rows[0] ? messageSearcher.rows[0].time_stamp : '',
-                "not_readed_messages": not_readed_messages.rows.length
+                "not_readed_messages": not_readed_messages.rows.length,
+                "type": "update_chat"
                 };
             return update_chat
         }
