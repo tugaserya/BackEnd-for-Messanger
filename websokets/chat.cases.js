@@ -9,7 +9,7 @@ async GetChats (message_data){
             `SELECT * FROM chats WHERE user_id_1 = $1 OR user_id_2 = $1;`,
             [user_id])
             if (chats.rows.length > 0) {
-                const chatUsers = chatSearcher.rows.reduce((acc, chat) => {
+                const chatUsers = chats.rows.reduce((acc, chat) => {
                     const userId = chat.user_id_1 === id ? chat.user_id_2 : chat.user_id_1;
                     acc[userId] = chat.id;
                     return acc;
