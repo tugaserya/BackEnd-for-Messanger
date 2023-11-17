@@ -33,7 +33,11 @@ async GetChats (message_data){
         chats.sort((a, b) => {
             return new Date(b.last_message_time) - new Date(a.last_message_time);
         });
-        return chats
+        const chat_list = {
+            chats,
+            "type": "get_chats"
+        }
+        return chat_list
     }catch(err){
         console.error(err);
     }

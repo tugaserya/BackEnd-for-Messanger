@@ -113,7 +113,7 @@ module.exports.initWebSocket = (server) => {
                         break;
                         case 'get_chats':
                             const chats_list = await ChatCases.GetChats(message_data)
-                            ws.send(JSON.stringify(chats_list))
+                            ws.send(JSON.stringify(chats_list, type))
                         break;
                         case 'update_chat':
                             const updated_chat = await ChatCases.UpdateChat(message_data)
