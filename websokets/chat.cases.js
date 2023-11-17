@@ -16,9 +16,9 @@ async GetChats (message_data){
         const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
         const chats = [];
         for (let user of users.rows) {
-            const chatId = chatUsers[user.id];
+            const chatId = chatUsers[user.user_id];
             const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`, [chatId]);
-            const not_readed_messages = await db.query(`SELECT id FROM messages WHERE chat_id = $1 AND is_readed = false;`, [chatId])
+            const not_readed_messages = await db.query(`SELECT * FROM messages WHERE chat_id = $1 AND is_readed = false;`, [chatId])
             if (messageSearcher.rows.length > 0 || user.id !== user_id) {
                 chats.push({
                     "chat_id": chatId,
