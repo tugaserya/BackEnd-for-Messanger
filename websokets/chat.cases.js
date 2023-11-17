@@ -63,8 +63,8 @@ async UpdateChat(message_data) {
                 "last_message_time": messageSearcher.rows[0] ? messageSearcher.rows[0].time_stamp : '',
                 "not_readed_messages": not_readed_messages.rows.length
                 });
+            return update_chat
         }
-        return update_chat
     }catch(err){
         console.error(err);
     }
