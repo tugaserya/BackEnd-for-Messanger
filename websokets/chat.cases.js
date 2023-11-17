@@ -9,7 +9,7 @@ async GetChats (message_data){
             `SELECT * FROM chats WHERE user_id_1 = $1 OR user_id_2 = $1;`,
             [user_id])
         if (chatSearcher.rows.length == 0){
-            const chats = [{}]
+            const chats = []
             return {
                 chats,
                 "type": "get_chats"
