@@ -87,10 +87,7 @@ module.exports.initWebSocket = (server) => {
                             break;
                         case 'is_readed_message':
                             const readed_meassage = await MessageCases.IsReadedMessage(message_data)
-                            payload = JSON.stringify({
-                                message_id: readed_meassage.rows[0].id,
-                                is_readed: readed_meassage.rows[0].is_readed,
-                                type: "readed_message"})
+                            payload = JSON.stringify(readed_meassage)
                             if(clients.has(String(readed_meassage.rows[0].recipient_id)) && clients.has(String(readed_meassage.rows[0].sender_id))) {
                                 const recipient_ws = clients.get(String(readed_meassage.rows[0].recipient_id))
                                 recipient_ws.send(payload)

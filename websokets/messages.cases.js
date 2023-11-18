@@ -66,8 +66,13 @@ async IsReadedMessage (message_data){
         console.log(message.rows[0].is_readed);
         console.log(message.rows.length);
         if(message.rows.length > 0 && message.rows[0].is_readed == false){
-            await db.query(`UPDATE messages SET is_readed = true WHERE id = $1`, [message_id])
-            return message
+            const is_readed = await db.query(`UPDATE messages SET is_readed = true WHERE id = $1`, [message_id])
+            const readed_message = {
+                message_id: message.rows[0].id,
+                is_readed: is_readed.rows[0].is_readed,
+                type: "readed_message"
+            }
+            return readed_message
         }
     }catch (err){
         console.error(err);
