@@ -68,11 +68,8 @@ async IsReadedMessage (message_data){
             const readed_message = {
                 message_id: message.rows[0].id,
                 is_readed: is_readed.rows[0].is_readed,
-                is_edited: message.rows[0].is_edited,
                 recipient_id: message.rows[0].recipient_id,
                 sender_id: message.rows[0].sender_id,
-                content: message.rows[0].content,
-                time_stamp: message.rows[0].time_stamp,
                 type: "readed_message"
             }
             return readed_message
@@ -80,11 +77,8 @@ async IsReadedMessage (message_data){
             const readed_message = {
                 message_id: message.rows[0].id,
                 is_readed: message.rows[0].is_readed,
-                is_edited: message.rows[0].is_edited,
                 recipient_id: message.rows[0].recipient_id,
                 sender_id: message.rows[0].sender_id,
-                content: message.rows[0].content,
-                time_stamp: message.rows[0].time_stamp,
                 type: "readed_message"
             }
             return readed_message
