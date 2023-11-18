@@ -96,7 +96,7 @@ module.exports.initWebSocket = (server) => {
                             } else if(clients.has(String(readed_meassage.recipient_id))){
                                 const recipient_ws = clients.get(String(readed_meassage.recipient_id))
                                 recipient_ws.send(payload)
-                            } else if(clients.has(String(readed_meassage.rows[0].sender_id))){
+                            } else if(clients.has(String(readed_meassage.sender_id))){
                                 const sender_ws = clients.get(String(readed_meassage.sender_id))
                                 sender_ws.send(payload)
                             }
