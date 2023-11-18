@@ -70,6 +70,8 @@ async IsReadedMessage (message_data){
             const readed_message = {
                 message_id: message.rows[0].id,
                 is_readed: is_readed.rows[0].is_readed,
+                recipient_id: message.rows[0].recipient_id,
+                sender_id: message.rows[0].sender_id,
                 type: "readed_message"
             }
             return readed_message

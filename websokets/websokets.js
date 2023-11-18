@@ -88,16 +88,16 @@ module.exports.initWebSocket = (server) => {
                         case 'is_readed_message':
                             const readed_meassage = await MessageCases.IsReadedMessage(message_data)
                             payload = JSON.stringify(readed_meassage)
-                            if(clients.has(String(readed_meassage.rows[0].recipient_id)) && clients.has(String(readed_meassage.rows[0].sender_id))) {
-                                const recipient_ws = clients.get(String(readed_meassage.rows[0].recipient_id))
+                            if(clients.has(String(readed_meassage.recipient_id)) && clients.has(String(readed_meassage.sender_id))) {
+                                const recipient_ws = clients.get(String(readed_meassage.recipient_id))
                                 recipient_ws.send(payload)
-                                const sender_ws = clients.get(String(readed_meassage.rows[0].sender_id))
+                                const sender_ws = clients.get(String(readed_meassage.sender_id))
                                 sender_ws.send(payload)
-                            } else if(clients.has(String(readed_meassage.rows[0].recipient_id))){
-                                const recipient_ws = clients.get(String(readed_meassage.rows[0].recipient_id))
+                            } else if(clients.has(String(readed_meassage.recipient_id))){
+                                const recipient_ws = clients.get(String(readed_meassage.recipient_id))
                                 recipient_ws.send(payload)
                             } else if(clients.has(String(readed_meassage.rows[0].sender_id))){
-                                const sender_ws = clients.get(String(readed_meassage.rows[0].sender_id))
+                                const sender_ws = clients.get(String(readed_meassage.sender_id))
                                 sender_ws.send(payload)
                             }
                         break;
