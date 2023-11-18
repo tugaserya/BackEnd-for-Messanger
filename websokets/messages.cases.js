@@ -63,8 +63,8 @@ async IsReadedMessage (message_data){
     try{
         const { message_id } = JSON.parse(message_data)
         const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
-        console.log(message.rows[0].is_readed);
-        console.log(message.rows.length);
+        console.log(message.rows[0].recipient_id)
+        console.log(message.rows[0].sender_id);
         if(message.rows.length > 0 && message.rows[0].is_readed == false){
             const is_readed = await db.query(`UPDATE messages SET is_readed = true WHERE id = $1`, [message_id])
             const readed_message = {
