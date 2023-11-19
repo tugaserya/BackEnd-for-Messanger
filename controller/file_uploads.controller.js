@@ -29,7 +29,7 @@ class FileUploadsController {
                     }
                     cb(null, true);
                 }
-            }).single('file');
+            }).single('image');
             
             
             upload(req, res, async function (err) {
