@@ -32,12 +32,14 @@ class FileUploadsController {
                 
                 upload(req, res, function (err) {
                     if (err) {
+                        console.log('not work');
                         res.status(500).json({message: "Ошибка загрузкифайла"})
                     } else {
+                        console.log('work');
                         res.status(200).json({message: "Файл загружен"})
                     }
                 });
-            } else {res.status(418).json({message: "ВОН АЛКАШ"})}
+            } else { console.log('work'); res.status(418).json({message: "ВОН АЛКАШ"})}
         } catch(err){
                 
         }
