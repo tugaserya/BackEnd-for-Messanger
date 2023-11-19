@@ -13,6 +13,7 @@ class FileUploadsController {
                     cb(null, '../uploads/avatars')
                 },
                 filename: function (req, file, cb) {
+                    console.log(`${req.body.id}_${req.body.login}`);
                     let newFileName = `${req.body.id}_${req.body.login}` + path.extname(file.originalname);
                     cb(null, newFileName);
                 }
