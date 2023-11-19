@@ -13,22 +13,29 @@ class FileUploadsController {
             const password = params.get("password");
             if(UserChecker(login, password)){
                 const user = await db.query(`SELECT * FROM users WHERE login = $1;`,[login])
-                let upload = multer({
-                    dest: '../uploads/avatars',
-                    limits: {
-                        fileSize: 10485760
-                    },
-                    fileFilter: function (req, file, cb) {
-                        if (file.mimetype !== 'image/jpeg' || file.mimetype !== 'image/png') {
-                            return cb(new Error('Неверный тип файла'));
-                        }
-                        cb(null, true);
+                let storage = multer.diskStorage({
+                    destination: function (req, file, cb) {
+                        cb(null, '../uploads/avatars')
                     },
                     filename: function (req, file, cb) {
                         let newFileName = `${user.rows[0].id}_${user.rows[0].login}` + path.extname(file.originalname);
                         cb(null, newFileName);
                     }
+                });
+                
+                let upload = multer({
+                    storage: storage,
+                    limits: {
+                        fileSize: 10485760
+                    },
+                    fileFilter: function (req, file, cb) {
+                        if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/png') {
+                            return cb(new Error('Неверный тип файла'));
+                        }
+                        cb(null, true);
+                    }
                 }).single('file');
+                
                 
                 upload(req, res, function (err) {
                     if (err) {
@@ -41,7 +48,7 @@ class FileUploadsController {
                 });
             } else { console.log('work'); res.status(418).json({message: "ВОН АЛКАШ"})}
         } catch(err){
-                
+                console.error(err);
         }
     }   
 
