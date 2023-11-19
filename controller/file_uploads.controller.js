@@ -20,7 +20,7 @@ class FileUploadsController {
             });
             
             let upload = multer({
-                dest: '../uploads/avatars',
+                destination: '../uploads/avatars',
                 limits: {
                     fileSize: 10485760
                 },
@@ -41,7 +41,7 @@ class FileUploadsController {
                         console.log('work');
                         res.status(200).json({message: "Файл загружен"})
                     } else { 
-                        console.log('work'); 
+                        console.log('work_not'); 
                         res.status(418).json({message: "ВОН АЛКАШ"})
                     }
                 }
