@@ -1,7 +1,7 @@
 const db = require('../db')
 const {UserChecker} = require("../userChecker");
 const multer = require('multer')
-
+const path = require('path')
 
 
 class FileUploadsController {
