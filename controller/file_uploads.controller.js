@@ -20,7 +20,7 @@ class FileUploadsController {
             });
             
             let upload = multer({
-                storage: storage,
+                dest: '../uploads/avatars',
                 limits: {
                     fileSize: 10485760
                 },
