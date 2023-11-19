@@ -34,7 +34,7 @@ class FileUploadsController {
             
             upload(req, res, async function (err) {
                 if (err) {
-                    console.log('not work');
+                    console.log(err);
                     res.status(500).json({message: "Ошибка загрузки файла"})
                 } else {
                     const { login, password } = req.body
