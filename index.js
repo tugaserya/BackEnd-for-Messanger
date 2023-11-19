@@ -17,6 +17,7 @@ const options = {
 const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
 const messagesRouter = require('./routes/messages.routes');
+const file_uploadsRouter = require('./routes/file_uploads.router')
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use('/', userRouter)
 app.use('/', chatRouter)
 app.use('/', messagesRouter)
+app.use('/', file_uploadsRouter)
 
 
 const server = https.createServer(options, app);

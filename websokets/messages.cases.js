@@ -67,9 +67,6 @@ async IsReadedMessage (message_data){
             const is_readed = await db.query(`UPDATE messages SET is_readed = true WHERE id = $1 RETURNING *`, [message_id])
             const readed_message = {
                 message_id: message.rows[0].id,
-                content: message.rows[0].content,
-                time_stamp: message.rows[0].time_stamp,
-                is_edited: message.rows[0].is_edited,
                 is_readed: is_readed.rows[0].is_readed,
                 recipient_id: message.rows[0].recipient_id,
                 sender_id: message.rows[0].sender_id,
