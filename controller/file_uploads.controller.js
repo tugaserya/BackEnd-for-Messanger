@@ -1,3 +1,9 @@
+const db = require('../db')
+const {UserChecker} = require("../userChecker");
+const multer = require('multer')
+
+
+
 class FileUploadsController {
 
     async AvatarsUpload (req, res){
