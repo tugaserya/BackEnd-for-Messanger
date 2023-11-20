@@ -24,8 +24,10 @@ class FileUploadsController {
                     fileSize: 10485760
                 },
                 fileFilter: function (req, file, cb) {
+                    console.log(file.filename + " work1");
                     if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
-                    cb(null, true);
+                        console.log(file.filename + " work2");
+                        cb(null, true);
                     } else{ cb(null, false)}
                 }
             }).single('image');
