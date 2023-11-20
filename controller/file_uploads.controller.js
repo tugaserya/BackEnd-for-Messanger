@@ -10,7 +10,7 @@ class FileUploadsController {
         try{
             let storage = multer.diskStorage({
                 destination(req, file, cb){
-                    cb(null, './uploads/avatars')
+                    cb(null, '../../uploads/avatars')
                 },
                 filename(req, file, cb){
                     cb(null, `${file.originalname}`)
