@@ -14,7 +14,7 @@ class FileUploadsController {
                     cb(null, uploadPath);
                 },
                 filename(req, file, cb) {
-                    cb(null, `${req.body.id}_${req.body.login}`);
+                    cb(null, `${req.body.id}_${req.body.login}_${file.originalname}`);
                 }
             });
             
