@@ -64,7 +64,7 @@ class FileUploadsController {
 
     async AvatarDownload(req, res){
         try{
-            const user = await db.query(`SELECT * FROM users WHERE id = $1;`, req.params.user_id)
+            const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.params.user_id])
             res.send(path.join(__dirname, '../../uploads/avatars/' + user.rows[0].avatar))
         } catch(err){
             console.error(err);
