@@ -11,7 +11,7 @@ class FileUploadsController {
         try{
             let storage = multer.diskStorage({
                 destination(req, file, cb) {
-                    const uploadPath = path.join(__dirname, '../../uploads/avatars');
+                    const uploadPath = path.join(__dirname, '../../uploads/avatars/');
                     cb(null, uploadPath);
                 },
                 async filename (req, file, cb) {
@@ -21,7 +21,7 @@ class FileUploadsController {
                         cb(null, `${req.body.id}_${req.body.login}_${file.originalname}`);
                     }else {
                         await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[`${req.body.id}_${req.body.login}_${file.originalname}`, req.body.id])
-                        fs.unlink(path.join(__dirname, '../../uploads/avatars' + Avatar.rows[0].avatar), (err) => {
+                        fs.unlink(path.join(__dirname, '../../uploads/avatars/' + Avatar.rows[0].avatar), (err) => {
                             if(err){console.error(err);}
                         })
                         cb(null, `${req.body.id}_${req.body.login}_${file.originalname}`);
