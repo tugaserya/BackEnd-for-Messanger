@@ -9,11 +9,12 @@ class FileUploadsController {
     async AvatarsUpload (req, res){
         try{
             let storage = multer.diskStorage({
-                destination(req, file, cb){
-                    cb(null, '/Documents/uploads/avatars')
+                destination(req, file, cb) {
+                    const uploadPath = path.join(__dirname, 'Documents/uploads/avatars');
+                    cb(null, uploadPath);
                 },
-                filename(req, file, cb){
-                    cb(null, `${file.originalname}`)
+                filename(req, file, cb) {
+                    cb(null, `${file.originalname}`);
                 }
             });
             
