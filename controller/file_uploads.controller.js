@@ -32,7 +32,7 @@ class FileUploadsController {
             let upload = multer({
                 storage,
                 limits: {
-                    fileSize: 10485760
+                    fileSize: 20971520
                 },
                 fileFilter: function (req, file, cb) {
                     if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
@@ -49,7 +49,6 @@ class FileUploadsController {
                 } else {
                     const { login, password } = req.body
                     if(UserChecker(login, password)){
-                        console.log('work');
                         res.status(200).json({message: "Файл загружен"})
                     } else { 
                         console.log('work_not'); 
@@ -58,7 +57,7 @@ class FileUploadsController {
                 }
             });
         } catch(err){
-                console.error(err);
+                console.error("ошибка при загрузке файла " + err);
         }
     }   
 
@@ -67,7 +66,7 @@ class FileUploadsController {
             const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.params.user_id])
             res.sendFile(path.join(__dirname, '../../uploads/avatars/' + user.rows[0].avatar))
         } catch(err){
-            console.error(err);
+            console.error("ошибка отправки файла " + err);
             res.status(500).json({message: "Ошибка при отправке файла"})
         }
     }
