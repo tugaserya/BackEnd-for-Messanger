@@ -63,6 +63,7 @@ class UserController {
         if (Usersearcher.rows.length > 0){
         const users = Usersearcher.rows.map(user => ({
             "id": user.id,
+            "avatar": user.avatar == 0 ? false : true, 
             "user_name": user.user_name
         }));
         res.status(200).json(users);

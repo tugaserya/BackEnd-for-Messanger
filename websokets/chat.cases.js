@@ -63,6 +63,7 @@ async UpdateChat(message_data) {
                         return acc;
                     }, {});
             const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
+            const avatar = users.rows[0].avatar
             const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`,
             [chat_id]);
             const not_readed_messages = await db.query(`SELECT * FROM messages WHERE chat_id = $1 AND is_readed = false AND recipient_id = $2;`,
@@ -71,6 +72,7 @@ async UpdateChat(message_data) {
                 "chat_id": chat_id,
                 "id": users.rows[0].id,
                 "user_name": users.rows[0].user_name,
+                "avatar": avatar == 0 ? false : true,
                 "last_message": messageSearcher.rows[0] ? messageSearcher.rows[0].content : '',
                 "last_message_time": messageSearcher.rows[0] ? messageSearcher.rows[0].time_stamp : '',
                 "not_readed_messages": not_readed_messages.rows.length,
