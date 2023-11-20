@@ -10,7 +10,7 @@ class FileUploadsController {
         try{
             let storage = multer.diskStorage({
                 destination(req, file, cb){
-                    cb(null, '../../uploads/avatars')
+                    cb(null, './uploads/avatars')
                 },
                 filename(req, file, cb){
                     cb(null, `${file.originalname}`)
@@ -23,7 +23,7 @@ class FileUploadsController {
                     fileSize: 10485760
                 },
                 fileFilter: function (req, file, cb) {
-                    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+                    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
                     cb(null, true);
                     } else{ cb(null, false)}
                 }
