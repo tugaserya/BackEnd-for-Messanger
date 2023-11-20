@@ -11,8 +11,8 @@ class UserController {
             res.status(409).json({ message: 'This user already exists!' })
         } else {
             const hashedPassword = await bcrypt.hash(password, 10)
-            await db.query(`INSERT INTO users (user_name, login, password, FCMtoken) values ($1, $2, $3, $4)`,
-            [user_name, login, hashedPassword,0])
+            await db.query(`INSERT INTO users (user_name, login, password, FCMtoken, avatar) values ($1, $2, $3, $4, $5)`,
+            [user_name, login, hashedPassword,0,0])
             res.status(200).json({ message: 'User registered successfully!' });
         }}catch (err) {
             console.error('ошибка при регистрации', err);
