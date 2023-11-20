@@ -24,11 +24,12 @@ class FileUploadsController {
                     fileSize: 10485760
                 },
                 fileFilter: function (req, file, cb) {
-                    console.log(file.filename + " work1");
+                    console.log('Received MIME Type:', file.mimetype);
                     if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
                         console.log(file.filename + " work2");
                         cb(null, true);
-                    } else{ cb(null, false)}
+                    } else{ console.log('Invalid MIME Type:', file.mimetype);
+                        cb(null, false)}
                 }
             }).single('image');
             
