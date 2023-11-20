@@ -10,7 +10,7 @@ class FileUploadsController {
         try{
             let storage = multer.diskStorage({
                 destination(req, file, cb) {
-                    const uploadPath = path.join(__dirname, 'Documents/uploads/avatars');
+                    const uploadPath = path.join(__dirname, '../../uploads/avatars');
                     cb(null, uploadPath);
                 },
                 filename(req, file, cb) {
