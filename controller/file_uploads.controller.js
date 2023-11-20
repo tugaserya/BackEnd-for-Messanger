@@ -9,24 +9,23 @@ class FileUploadsController {
     async AvatarsUpload (req, res){
         try{
             let storage = multer.diskStorage({
-                destination: function (req, file, cb) {
-                    cb(null, '../uploads/avatars')
+                destination(req, file, cb){
+                    cb(null, '../../uploads/avatars')
+                },
+                filename(req, file, cb){
+                    cb(null, `${file.originalname}`)
                 }
-                // filename: function (req, file, cb) {
-                //     console.log(`${req.body.id}_${req.body.login}`);
-                //     let newFileName = `${req.body.id}_${req.body.login}` + path.extname(file.originalname);
-                //     cb(null, newFileName);
-                // }
             });
             
             let upload = multer({
-                destination: '../uploads/avatars',
+                storage,
                 limits: {
                     fileSize: 10485760
                 },
                 fileFilter: function (req, file, cb) {
-                    
+                    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
                     cb(null, true);
+                    } else{ cb(null, false)}
                 }
             }).single('image');
             
