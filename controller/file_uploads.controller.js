@@ -17,9 +17,11 @@ class FileUploadsController {
                 async filename (req, file, cb) {
                     const Avatar = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.id])
                     if(Avatar.rows[0].avatar == 0){
+                        console.log(Avatar.rows[0].avatar + " if 0");
                         await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[`${req.body.id}_${req.body.login}_${file.originalname}`, req.body.id])
                         cb(null, `${req.body.id}_${req.body.login}_${file.originalname}`);
                     }else {
+                        console.log(Avatar.rows[0].avatar + " if not 0");
                         await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[`${req.body.id}_${req.body.login}_${file.originalname}`, req.body.id])
                         fs.unlink(path.join(__dirname, '../../uploads/avatars/' + Avatar.rows[0].avatar), (err) => {
                             if(err){console.error(err);}

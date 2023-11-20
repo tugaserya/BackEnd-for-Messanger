@@ -23,7 +23,7 @@ async GetChats (message_data){
         const users = await db.query(`SELECT * FROM users WHERE id IN (${Object.keys(chatUsers).join()});`);
         const chats = [];
         for (let user of users.rows) {
-            let avatar = users.rows[0].avatar
+            let avatar = user.avatar
             const chatId = chatUsers[user.id];
             const messageSearcher = await db.query(`SELECT content, time_stamp FROM messages WHERE chat_id = $1 ORDER BY time_stamp DESC LIMIT 1;`, [chatId]);
             const not_readed_messages = await db.query(`SELECT * FROM messages WHERE chat_id = $1 AND is_readed = false AND recipient_id = $2;`, [chatId, user_id])
