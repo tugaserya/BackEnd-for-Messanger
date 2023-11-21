@@ -17,11 +17,9 @@ class FileUploadsController {
                 async filename (req, file, cb) {
                     const Avatar = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.id])
                     if(Avatar.rows[0].avatar == 0){
-                        console.log(Avatar.rows[0].avatar + " if 0");
                         await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[`${req.body.id}_${req.body.login}_${file.originalname}`, req.body.id])
                         cb(null, `${req.body.id}_${req.body.login}_${file.originalname}`);
                     }else {
-                        console.log(Avatar.rows[0].avatar + " if not 0");
                         await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[`${req.body.id}_${req.body.login}_${file.originalname}`, req.body.id])
                         fs.unlink(path.join(__dirname, '../../uploads/avatars/' + Avatar.rows[0].avatar), (err) => {
                             if(err){console.error(err);}
@@ -50,7 +48,7 @@ class FileUploadsController {
                     res.status(500).json({message: "Ошибка загрузки файла"})
                 } else {
                     const { login, password } = req.body
-                    if(UserChecker(login, password)){
+                    if(await UserChecker(login, password)){
                         res.status(200).json({message: "Файл загружен"})
                     } else { 
                         console.log('work_not'); 
@@ -72,6 +70,25 @@ class FileUploadsController {
             console.error("ошибка отправки файла " + err);
             res.status(500).json({message: "Ошибка при отправке файла"})
         }
+    }
+
+    async DeleteAvatar(req, res){
+        try{
+            if(await UserChecker(req.body.login, req.body.password)){
+                const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.user_id])
+                if(user.rows[0].avatar != 0 ){return} else{
+                await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[0, req.body.user_id])
+                fs.unlink(path.join(__dirname, '../../uploads/avatars/' + user.rows[0].avatar), (err) => {
+                    if(err){
+                        console.error(err);
+                        res.status(500).json({message:"Ошибка удаления аватара"})
+                    }
+                })
+                res.status(200).json({message:"Автар удален"})
+                }
+            }
+        } catch(err){
+            console.error(err);        }
     }
 }
 
