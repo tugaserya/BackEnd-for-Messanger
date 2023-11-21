@@ -116,10 +116,13 @@ async FileMessage(message_data) {
         const {file, file_name, file_type} = JSON.parse(message_data)
         let file_rows = {}
         const new_message = await this.NewMessage(message_data)
+        console.log('work 1')
         if (file && file_type) {
+            console.log('work 2')
             switch (file_type) {
                 case 'text':
                     if (file instanceof Buffer) {
+                        console.log('work 3')
                         const new_file_name = Date.now() + file_name
                         let file_path = path.join(__dirname, '../../uploads/docs/', new_file_name)
                         await fs.writeFile(file_path, file, (err) => {
