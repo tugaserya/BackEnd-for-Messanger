@@ -127,7 +127,14 @@ module.exports.initWebSocket = (server) => {
                             ws.send(JSON.stringify(updated_chat))
                             break;
                         case 'file_message':
-                            const file_message = MessageCases.FileMessage(message_data)
+                            const file_message = await MessageCases.FileMessage(message_data)
+                            payload = JSON.stringify(file_message)
+                            if (clients.has(String(file_message.message.recipient_id))) {
+                                const recipient_ws = clients.get(String(file_message.message.recipient_id));
+                                recipient_ws.send(payload);
+                            }
+                            await sendNotification(file_message.message.sender_id, file_message.message.recipient_id, file_message.message.content)
+                            ws.send(payload);
                             break;
                     }
                 } catch (error) {

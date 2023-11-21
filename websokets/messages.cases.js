@@ -1,5 +1,6 @@
 const db = require('../db')
 const moment = require('moment')
+const fs = require("fs");
 
 class MessageCases {
 
@@ -38,12 +39,9 @@ async UpdateMessage(message_data, login){
         const message = await db.query(`SELECT * FROM messages WHERE id = $1;`, [message_id])
         if (user_id.rows[0].id === message.rows[0].sender_id) {
             const updated_message = await db.query(
-            `UPDATE messages
-            SET content = $1, is_edited = true
-            WHERE id = $2 RETURNING *;`,
+            `UPDATE messages SET content = $1, is_edited = true WHERE id = $2 RETURNING *;`,
             [new_content, message_id])
-
-            const message_data = {
+            const message = {
                 message_id: updated_message.rows[0].id,
                 sender_id: updated_message.rows[0].sender_id,
                 recipient_id: updated_message.rows[0].recipient_id,
@@ -52,7 +50,7 @@ async UpdateMessage(message_data, login){
                 new_content: updated_message.rows[0].content,
                 is_edited: updated_message.rows[0].is_edited,
                 type: "updated_message"}
-            return message_data
+            return message
             }
         }catch (err){
             console.error(err);
@@ -114,11 +112,75 @@ async ArchiveMessage(message_data, login){
 
 async FileMessage(message_data){
     try{
-        const {file, file_type} = JSON.parse(message_data)
+        const { file, file_name, file_type} = JSON.parse(message_data)
+        let file_rows = {}
+        const new_message = await this.NewMessage(message_data)
         if(file && file_type){
-            
+            switch(file_type){
+                case 'text':
+                    if (file instanceof Buffer) {
+                        const new_file_name = Date.now() + file_name
+                        let file_path = '../../uploads/docs/' + new_file_name
+                        await fs.writeFile(file_path, file, (err) => {
+                            if (err){console.error(err); return}
+                        });
+                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
+                        file_rows =  {
+                            file: file,
+                            file_type: file_type
+                        }
+                    }
+                    break;
+                case 'media':
+                    if (file instanceof Buffer) {
+                        const new_file_name = Date.now() + file_name
+                        let file_path = '../../uploads/media/' + new_file_name
+                        await fs.writeFile(file_path, file, (err) => {
+                            if (err) console.error(err)
+                        });
+                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
+                        file_rows = {
+                            file: file,
+                            file_type: file_type
+                        }
+                    }
+                    break;
+                case 'image':
+                    if (file instanceof Buffer) {
+                        const new_file_name = Date.now() + file_name
+                        let file_path = '../../uploads/image/' + new_file_name
+                        await fs.writeFile(file_path, file, (err) => {
+                            if (err) console.error(err)
+                        });
+                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
+                        file_rows = {
+                            file: file,
+                            file_type: file_type
+                        }
+                    }
+                    break;
+                case 'other':
+                    if (file instanceof Buffer) {
+                        const new_file_name = Date.now() + file_name
+                        let file_path = '../../uploads/other/' + new_file_name
+                        await fs.writeFile(file_path, file, (err) => {
+                            if (err) console.error(err)
+                        });
+                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
+                        file_rows = {
+                            file: file,
+                            file_type: file_type
+                        }
+                    }
+                    break;
+            }
+
         }
-        await this.NewMessage(message_data)
+        const full_message = {
+            message: new_message,
+            file_rows: file_rows
+        }
+        return full_message
     }catch (err){
         console.error(err)
     }
