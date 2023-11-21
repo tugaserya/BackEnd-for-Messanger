@@ -190,5 +190,4 @@ async FileMessage(message_data) {
         }
     }
 }
-}
 module.exports = new MessageCases()
