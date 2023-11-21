@@ -9,7 +9,7 @@ CREATE TABLE users
     FCMtoken VARCHAR(255) NOT NULL
 );
 
-ALTER TABLE users ADD avatar VARCHAR(50);
+ALTER TABLE users ADD avatar TEXT;
 
 CREATE TABLE chats
 (

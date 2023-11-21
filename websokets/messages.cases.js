@@ -113,6 +113,15 @@ async ArchiveMessage(message_data, login){
 }
 
 async FileMessage(message_data){
+    try{
+        const {file, file_type} = JSON.parse(message_data)
+        if(file && file_type){
+            
+        }
+        await this.NewMessage(message_data)
+    }catch (err){
+        console.error(err)
+    }
 }
 }
 module.exports = new MessageCases()
