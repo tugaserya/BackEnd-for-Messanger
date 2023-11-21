@@ -1,6 +1,7 @@
 const db = require('../db')
 const moment = require('moment')
 const fs = require("fs");
+const path = require("path");
 
 class MessageCases {
 
@@ -110,22 +111,25 @@ async ArchiveMessage(message_data, login){
     }
 }
 
-async FileMessage(message_data){
-    try{
-        const { file, file_name, file_type} = JSON.parse(message_data)
+async FileMessage(message_data) {
+    try {
+        const {file, file_name, file_type} = JSON.parse(message_data)
         let file_rows = {}
         const new_message = await this.NewMessage(message_data)
-        if(file && file_type){
-            switch(file_type){
+        if (file && file_type) {
+            switch (file_type) {
                 case 'text':
                     if (file instanceof Buffer) {
                         const new_file_name = Date.now() + file_name
-                        let file_path = '../../uploads/docs/' + new_file_name
+                        let file_path = path.join(__dirname, '../../uploads/docs/', new_file_name)
                         await fs.writeFile(file_path, file, (err) => {
-                            if (err){console.error(err); return}
+                            if (err) {
+                                console.error(err);
+                                return
+                            }
                         });
                         await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
-                        file_rows =  {
+                        file_rows = {
                             file: file,
                             file_type: file_type
                         }
@@ -134,7 +138,7 @@ async FileMessage(message_data){
                 case 'media':
                     if (file instanceof Buffer) {
                         const new_file_name = Date.now() + file_name
-                        let file_path = '../../uploads/media/' + new_file_name
+                        let file_path = path.join(__dirname, '../../uploads/media/', new_file_name)
                         await fs.writeFile(file_path, file, (err) => {
                             if (err) console.error(err)
                         });
@@ -148,7 +152,7 @@ async FileMessage(message_data){
                 case 'image':
                     if (file instanceof Buffer) {
                         const new_file_name = Date.now() + file_name
-                        let file_path = '../../uploads/image/' + new_file_name
+                        let file_path = path.join(__dirname, '../../uploads/image/', new_file_name)
                         await fs.writeFile(file_path, file, (err) => {
                             if (err) console.error(err)
                         });
@@ -162,7 +166,7 @@ async FileMessage(message_data){
                 case 'other':
                     if (file instanceof Buffer) {
                         const new_file_name = Date.now() + file_name
-                        let file_path = '../../uploads/other/' + new_file_name
+                        let file_path = path.join(__dirname, '../../uploads/other/', new_file_name)
                         await fs.writeFile(file_path, file, (err) => {
                             if (err) console.error(err)
                         });
@@ -174,15 +178,16 @@ async FileMessage(message_data){
                     }
                     break;
             }
-
+            const full_message = {
+                message: new_message,
+                file_rows: file_rows
+            }
+            return full_message
         }
-        const full_message = {
-            message: new_message,
-            file_rows: file_rows
+    } catch(err)
+        {
+            console.error(err)
         }
-        return full_message
-    }catch (err){
-        console.error(err)
     }
 }
 }

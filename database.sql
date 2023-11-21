@@ -35,6 +35,8 @@ CREATE TABLE messages
 
 ALTER TABLE messages ADD is_readed BOOLEAN NOT NULL;
 ALTER TABLE messages ADD is_edited BOOLEAN NOT NULL;
+ALTER TABLE messages ADD file VARCHAR(255);
+ALTER TABLE messages ADD file_type VARCHAR(255);
 
 CREATE TABLE ARCHIVEchats
 (
@@ -55,5 +57,7 @@ CREATE TABLE ARCHIVEmessages
 
 ALTER TABLE ARCHIVEmessages ADD is_readed BOOLEAN;
 ALTER TABLE ARCHIVEmessages ADD is_edited BOOLEAN;
+ALTER TABLE archivemessages ADD file VARCHAR(255);
+ALTER TABLE archivemessages ADD file_type VARCHAR(255);
 
 
