@@ -12,8 +12,7 @@ const options = {
 };
 
 
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 
 const userRouter = require('./routes/user.routes');
 const chatRouter = require('./routes/chats.routes');
@@ -21,6 +20,9 @@ const messagesRouter = require('./routes/messages.routes');
 const file_uploadsRouter = require('./routes/file_uploads.router')
 
 const app = express();
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use(express.json());
 app.use('/', userRouter)
