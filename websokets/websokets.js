@@ -67,20 +67,21 @@ module.exports.initWebSocket = (server) => {
                             if (clients.has(String(updated_message.recipient_id))) {
                                 const recipient_ws = clients.get(String(updated_message.recipient_id));
                                 recipient_ws.send(payload)
-                            } ws.send(payload)
+                            }
+                            ws.send(payload)
                             break;
                         case 'archive_message':
                             const message = await MessageCases.ArchiveMessage(message_data, login)
-                            payload = JSON.stringify({ message_id: message.rows[0].id, type: "delete_message" })
+                            payload = JSON.stringify({message_id: message.rows[0].id, type: "delete_message"})
                             if (clients.has(String(message.rows[0].recipient_id)) && clients.has(String(message.rows[0].sender_id))) {
                                 const recipient_ws = clients.get(String(message.rows[0].recipient_id))
                                 const sender_ws = clients.get(String(message.rows[0].sender_id))
                                 recipient_ws.send(payload)
                                 sender_ws.send(payload)
-                            } else if(clients.has(String(message.rows[0].recipient_id))){
+                            } else if (clients.has(String(message.rows[0].recipient_id))) {
                                 const recipient_ws = clients.get(String(message.rows[0].recipient_id))
                                 recipient_ws.send(payload)
-                            } else if (clients.has(String(message.rows[0].sender_id))){
+                            } else if (clients.has(String(message.rows[0].sender_id))) {
                                 const sender_ws = clients.get(String(message.rows[0].sender_id));
                                 sender_ws.send(payload)
                             }
@@ -88,43 +89,47 @@ module.exports.initWebSocket = (server) => {
                         case 'is_readed_message':
                             const readed_meassage = await MessageCases.IsReadedMessage(message_data)
                             payload = JSON.stringify(readed_meassage)
-                            if(clients.has(String(readed_meassage.recipient_id)) && clients.has(String(readed_meassage.sender_id))) {
+                            if (clients.has(String(readed_meassage.recipient_id)) && clients.has(String(readed_meassage.sender_id))) {
                                 const recipient_ws = clients.get(String(readed_meassage.recipient_id))
                                 recipient_ws.send(payload)
                                 const sender_ws = clients.get(String(readed_meassage.sender_id))
                                 sender_ws.send(payload)
-                            } else if(clients.has(String(readed_meassage.recipient_id))){
+                            } else if (clients.has(String(readed_meassage.recipient_id))) {
                                 const recipient_ws = clients.get(String(readed_meassage.recipient_id))
                                 recipient_ws.send(payload)
-                            } else if(clients.has(String(readed_meassage.sender_id))){
+                            } else if (clients.has(String(readed_meassage.sender_id))) {
                                 const sender_ws = clients.get(String(readed_meassage.sender_id))
                                 sender_ws.send(payload)
                             }
-                        break;
+                            break;
                         case 'archive_chat':
                             const archived_chat = await ChatCases.ArchiveChat(message_data)
                             payload = JSON.stringify({chat_id: archived_chat.rows[0].id, type: "deleted_chat"})
-                            if(clients.has(String(archived_chat.rows[0].user_id_1)) && clients.has(String(archived_chat.rows[0].user_id_2))){
+                            if (clients.has(String(archived_chat.rows[0].user_id_1)) && clients.has(String(archived_chat.rows[0].user_id_2))) {
                                 const user_1_ws = clients.get(String(archived_chat.rows[0].user_id_1))
                                 user_1_ws.send(payload)
                                 const user_2_ws = clients.get(String(archived_chat.rows[0].user_id_2))
                                 user_2_ws.send(payload)
-                            } else if(clients.has(String(archived_chat.rows[0].user_id_1))){
+                            } else if (clients.has(String(archived_chat.rows[0].user_id_1))) {
                                 const user_1_ws = clients.get(String(archived_chat.rows[0].user_id_1))
                                 user_1_ws.send(payload)
-                            } else if(clients.has(String(archived_chat.rows[0].user_id_2))){
+                            } else if (clients.has(String(archived_chat.rows[0].user_id_2))) {
                                 const user_2_ws = clients.get(String(archived_chat.rows[0].user_id_2))
                                 user_2_ws.send(payload)
                             }
-                        break;
+                            break;
                         case 'get_chats':
                             const chats_list = await ChatCases.GetChats(message_data)
                             ws.send(JSON.stringify(chats_list, type))
-                        break;
+                            break;
                         case 'update_chat':
                             const updated_chat = await ChatCases.UpdateChat(message_data)
                             ws.send(JSON.stringify(updated_chat))
-                        }
+                            break;
+                        case 'file_message':
+                            const file_message = MessageCases.FileMessage(message_data)
+                            break;
+                    }
                 } catch (error) {
                     console.error(error);
                 }
