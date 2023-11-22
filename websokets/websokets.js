@@ -131,6 +131,7 @@ module.exports.initWebSocket = (server) => {
                             if(clients.has(String(new_file_message.recipient_id))){
                                 const recipient_ws = clients.get(String(new_file_message.recipient_id))
                                 recipient_ws.send(JSON.stringify(new_file_message))
+                                ws.send(JSON.stringify(new_file_message))
                             }
                             break;
                     }
