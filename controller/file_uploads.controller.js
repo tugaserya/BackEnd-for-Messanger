@@ -62,12 +62,16 @@ class FileUploadsController {
                     switch (req.body.filetype) {
                         case 'image':
                             uploadPath = path.join(__dirname, '../../uploads/image/');
+                            break
                         case 'media':
                             uploadPath = path.join(__dirname, '../../uploads/media/');
+                            break
                         case 'docs':
                             uploadPath = path.join(__dirname, '../../uploads/docs/');
+                            break
                         case 'other':
                             uploadPath = path.join(__dirname, '../../uploads/other/');
+                            break
                     }
                     cb(null, uploadPath);
                 },
