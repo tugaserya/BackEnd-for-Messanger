@@ -58,6 +58,7 @@ class FileUploadsController {
             let storage = multer.diskStorage({
                 destination(req, file, cb) {
                     let uploadPath;
+                    console.log(req.body.filetype + " " + req.body.filetype, req.body.message_id)
                     switch (req.body.filetype) {
                         case 'image':
                             uploadPath = path.join(__dirname, '../../uploads/image/');
