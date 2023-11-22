@@ -16,7 +16,7 @@ async NewMessage(message_data) {
                 values ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
                 [chat_id, sender_id, recipient_id, content, time_stamp, false, false]
             );
-            const message_data = {
+            const message = {
                 message_id: result.rows[0].id,
                 chat_id,
                 sender_id,
@@ -26,8 +26,9 @@ async NewMessage(message_data) {
                 is_readed: result.rows[0].is_readed,
                 is_edited: result.rows[0].is_edited,
                 type: "new_message"}
+            return message;
             }
-        return message_data;
+
         }catch (err){
             console.error(err)
         }
