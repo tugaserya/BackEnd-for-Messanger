@@ -111,86 +111,20 @@ async ArchiveMessage(message_data, login){
     }
 }
 
-async FileMessage(message_data) {
+async NewFileMessage(message_data) {
     try {
-        const {file, file_name, file_type} = JSON.parse(message_data)
-        let file_rows = {}
-        const new_message = await this.NewMessage(message_data)
-        console.log('work 1')
-        if (file && file_type) {
-            console.log('work 2')
-            switch (file_type) {
-                case 'text':
-                    if (file instanceof Buffer) {
-                        console.log('work 3')
-                        const new_file_name = Date.now() + file_name
-                        let file_path = path.join(__dirname, '../../uploads/docs/', new_file_name)
-                        await fs.writeFile(file_path, file, (err) => {
-                            if (err) {
-                                console.error(err);
-                                return
-                            }
-                        });
-                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
-                        file_rows = {
-                            file: file,
-                            file_type: file_type
-                        }
-                    }
-                    break;
-                case 'media':
-                    if (file instanceof Buffer) {
-                        const new_file_name = Date.now() + file_name
-                        let file_path = path.join(__dirname, '../../uploads/media/', new_file_name)
-                        await fs.writeFile(file_path, file, (err) => {
-                            if (err) console.error(err)
-                        });
-                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
-                        file_rows = {
-                            file: file,
-                            file_type: file_type
-                        }
-                    }
-                    break;
-                case 'image':
-                    if (file instanceof Buffer) {
-                        const new_file_name = Date.now() + file_name
-                        let file_path = path.join(__dirname, '../../uploads/image/', new_file_name)
-                        await fs.writeFile(file_path, file, (err) => {
-                            if (err) console.error(err)
-                        });
-                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
-                        file_rows = {
-                            file: file,
-                            file_type: file_type
-                        }
-                    }
-                    break;
-                case 'other':
-                    if (file instanceof Buffer) {
-                        const new_file_name = Date.now() + file_name
-                        let file_path = path.join(__dirname, '../../uploads/other/', new_file_name)
-                        await fs.writeFile(file_path, file, (err) => {
-                            if (err) console.error(err)
-                        });
-                        await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`, [new_file_name, file_type, message.message_id])
-                        file_rows = {
-                            file: file,
-                            file_type: file_type
-                        }
-                    }
-                    break;
+        const { message_id, user_id } = JSON.parse(message_data)
+        const message = await db.query(`SELECT * FROM messages WHERE id = $1 AND sender_id = $2;`, [message_id, user_id])
+        if(message.rows.length > 0){
+            return {
+                file: message.rows[0].originalfile,
+                fyletype: message.rows[0].file_type,
+                recipient_id: message.rows[0].recipient_id,
+                type: "new_file_message"
             }
-            const full_message = {
-                message: new_message,
-                file_rows: file_rows
-            }
-            return full_message
-        }
-    } catch(err)
-        {
-            console.error(err)
-        }
-    }
+        } else { return }
+    }catch (err){
+        console.error(err)}
+}
 }
 module.exports = new MessageCases()

@@ -54,12 +54,12 @@ module.exports.initWebSocket = (server) => {
                         case 'new_message':
                             const NewMessage = await MessageCases.NewMessage(message_data)
                             payload = JSON.stringify(NewMessage)
+                            ws.send(payload);
                             if (clients.has(String(NewMessage.recipient_id))) {
                                 const recipient_ws = clients.get(String(NewMessage.recipient_id));
                                 recipient_ws.send(payload);
                             }
                             await sendNotification(NewMessage.sender_id, NewMessage.recipient_id, NewMessage.content)
-                            ws.send(payload);
                             break;
                         case 'update_message':
                             const updated_message = await MessageCases.UpdateMessage(message_data, login)
@@ -126,15 +126,12 @@ module.exports.initWebSocket = (server) => {
                             const updated_chat = await ChatCases.UpdateChat(message_data)
                             ws.send(JSON.stringify(updated_chat))
                             break;
-                        case 'file_message':
-                            const file_message = await MessageCases.FileMessage(message_data)
-                            payload = JSON.stringify(file_message)
-                            if (clients.has(String(file_message.message.recipient_id))) {
-                                const recipient_ws = clients.get(String(file_message.message.recipient_id));
-                                recipient_ws.send(payload);
+                        case 'new_file_message':
+                            const new_file_message = await MessageCases.NewFileMessage(message_data)
+                            if(clients.has(String(new_file_message.recipient_id))){
+                                const recipient_ws = clients.get(String(new_file_message.recipient_id))
+                                recipient_ws.send(JSON.stringify(new_file_message))
                             }
-                            await sendNotification(file_message.message.sender_id, file_message.message.recipient_id, file_message.message.content)
-                            ws.send(payload);
                             break;
                     }
                 } catch (error) {
