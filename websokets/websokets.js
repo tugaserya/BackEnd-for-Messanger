@@ -44,7 +44,7 @@ module.exports.initWebSocket = (server) => {
         const login = params.get("login")
         const password = params.get("password");
         clients.set(id, ws);
-        if (await UserChecker(login, password)) {
+        if (await UserChecker(id, login, password)) {
             ws.on('message', async (message) => {
                 try {
                     const { type } = JSON.parse(message);

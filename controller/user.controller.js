@@ -43,9 +43,9 @@ class UserController {
     }
 
     async LogOutUser(req, res) {
-        const {login, password} = req.body
+        const {id, login, password} = req.body
         try{
-            if (await UserChecker(login, password)) {
+            if (await UserChecker(id, login, password)) {
                 await db.query(`UPDATE users SET FCMtoken = $1 WHERE login = $2;`,[0, login])
                 res.status(200).json({message:"LogOut is Succesfull"})
             } else { return }

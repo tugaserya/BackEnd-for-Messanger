@@ -5,10 +5,10 @@ class ChatsController {
     async createChat(req, res) {
         const { user_id_1, user_id_2, login, password } = req.body
         try {
-            if(await UserChecker(login, password)){
+            if(await UserChecker(user_id_1, login, password)){
             const idSercher = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2`,
                 [user_id_1, user_id_2])
-            if (idSercher.rows.length == 2) {
+            if (idSercher.rows.length === 2) {
                 const ChatChecker = await db.query(
                     `SELECT * FROM chats WHERE (user_id_1 = $1 AND user_id_2 = $2) OR (user_id_1 = $2 AND user_id_2 = $1);`,
                     [user_id_1, user_id_2])

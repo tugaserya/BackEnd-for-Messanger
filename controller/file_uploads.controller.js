@@ -7,7 +7,7 @@ class FileUploadsController {
     async AvatarsUpload (req, res){
         try{
            const { file, user_id, login,  password } = req.body
-            if(await  UserChecker(login, password)){
+            if(await  UserChecker(user_id, login, password)){
                 await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`, [file , user_id])
                 res.status(200).json({message: "Аватар загружен"})
             } else {
@@ -35,7 +35,7 @@ class FileUploadsController {
 
     async DeleteAvatar(req, res){
         try{
-            if(await UserChecker(req.body.login, req.body.password)){
+            if(await UserChecker(req.body.id ,req.body.login, req.body.password)){
                 const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.user_id])
                 if(user.rows[0].avatar == 0 ){
                     res.status(404).json({message: "У вас нет аватара"})
