@@ -26,8 +26,8 @@ async NewMessage(message_data) {
                 is_readed: result.rows[0].is_readed,
                 is_edited: result.rows[0].is_edited,
                 type: "new_message"}
-                return message_data;
             }
+        return message_data;
         }catch (err){
             console.error(err)
         }
@@ -50,6 +50,8 @@ async UpdateMessage(message_data, login){
                 time_of_day: updated_message.rows[0].time_stamp,
                 new_content: updated_message.rows[0].content,
                 is_edited: updated_message.rows[0].is_edited,
+                originalfile: updated_message.rows[0].originalfile,
+                fyle_type: updated_message.rows[0].file_type,
                 type: "updated_message"}
             return message
             }

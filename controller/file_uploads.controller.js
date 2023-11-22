@@ -96,7 +96,7 @@ class FileUploadsController {
                     console.log(err);
                     res.status(500).json({message: "Ошибка загрузки файла"})
                 } else {
-                    res.status(200).json({filename: fileoriginalname, newfilename: newfilename})
+                    res.status(200).json({originalfile: fileoriginalname, file: newfilename})
                 }
             });
         } catch (err){
