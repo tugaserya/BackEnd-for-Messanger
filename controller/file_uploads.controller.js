@@ -78,7 +78,7 @@ class FileUploadsController {
                     fileoriginalname = file.originalname
                     newfilename = `${Date.now()}_${file.originalname}`
                     await db.query(`UPDATE messages SET file = $1, file_type = $2 WHERE id = $3;`,[newfilename, req.body.filetype, req.body.message_id])
-                    cb(null, newfilename);
+                    cb(null, String(newfilename));
                 }
             });
 
