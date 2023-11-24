@@ -14,9 +14,9 @@ async NewMessage(message_data) {
         const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
         if (UserSearh.rows.length === 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
             const result = await db.query(
-                `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp, is_readed, is_edited)
-                values ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
-                [chat_id, sender_id, recipient_id, content, time_stamp, false, false]
+                `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp, is_readed, is_edited, originalfile, file_type)
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;`,
+                [chat_id, sender_id, recipient_id, content, time_stamp, false, false, originalfile, file_type]
             );
             const message = {
                 message_id: result.rows[0].id,
@@ -27,6 +27,8 @@ async NewMessage(message_data) {
                 time_of_day: result.rows[0].time_stamp,
                 is_readed: result.rows[0].is_readed,
                 is_edited: result.rows[0].is_edited,
+                originalfile,
+                file_type,
                 type: "new_message"}
             return message;
             }
