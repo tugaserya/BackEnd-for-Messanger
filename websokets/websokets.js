@@ -46,14 +46,6 @@ module.exports.initWebSocket = (server) => {
         clients.set(id, ws);
         if (await UserChecker(id, login, password)) {
             ws.on('message', async (message) => {
-                if (message instanceof ArrayBuffer) {
-                    const fileBuffer = await MessageCases.FileMessage(message);
-                    if (clients.has(String(fileBuffer.recipient_id))) {
-                        const recipient_ws = clients.get(String(fileBuffer.recipient_id));
-                        recipient_ws.send(fileBuffer);
-                    }
-                    ws.send(fileBuffer);
-                } else {
                     try {
                         const {type} = JSON.parse(message);
                         const message_data = message
@@ -135,17 +127,17 @@ module.exports.initWebSocket = (server) => {
                                 ws.send(JSON.stringify(updated_chat))
                                 break;
                             case 'new_file_message':
-                                const new_file_message = await MessageCases.NewFileMessage(message_data)
-                                if (clients.has(String(new_file_message.recipient_id))) {
-                                    const recipient_ws = clients.get(String(new_file_message.recipient_id))
-                                    recipient_ws.send(JSON.stringify(new_file_message))
+                                const file = await MessageCases.FileMessage(message_data);
+                                if (clients.has(String(file.recipient_id))) {
+                                    const recipient_ws = clients.get(String(file.recipient_id));
+                                    recipient_ws.send(file);
                                 }
+                                ws.send(file);
                                 break;
                         }
                     } catch (error) {
                         console.error(error);
                     }
-                }
             })
         } else { return }
     })

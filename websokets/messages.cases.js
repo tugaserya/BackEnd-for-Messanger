@@ -118,10 +118,10 @@ async ArchiveMessage(message_data, login){
     }
 }
 
-    async FileMessage(message){
+    async FileMessage(message_data){
         try{
-            const buffer = Buffer.from(message);
-            const id = buffer.readBigInt64BE(0);
+            const {id, base64} = JSON.parse(message_data)
+            const buffer = Buffer.from(base64, 'base64');
             const file_rows = db.query(`SELECT * FROM messages WHERE id = $1;`,[id]);
             const new_file_name = Date.now() + "_" + file_rows.rows[0].originalfile;
             if(file_rows.rows.length > 0) {
@@ -129,8 +129,7 @@ async ArchiveMessage(message_data, login){
                     if (err) console.error(err);
                 }))
                 await db.query(`UPDATE messages SET file = $1 WHERE id = $2;`, [new_file_name, id]);
-                const fileBuffer = buffer.subarray(8);
-                return Uint8Array.from(fileBuffer).buffer;
+                return base64
             }else{return}
         } catch (err){
             console.error(err);
