@@ -49,60 +49,7 @@ class FileUploadsController {
             console.error(err);        }
     }
 
-    async FileUpload(req, res){
-        try{
-            let fileoriginalname, newfilename;
-            let storage = multer.diskStorage({
-                destination(req, file, cb) {
-                    let uploadPath;
-                    switch (req.body.filetype) {
-                        case 'image':
-                            uploadPath = path.join(__dirname, '../../uploads/image/');
-                            break
-                        case 'video':
-                            uploadPath = path.join(__dirname, '../../uploads/video/');
-                            break
-                        case 'music':
-                            uploadPath = path.join(__dirname, '../../uploads/music/');
-                            break
-                        case 'other':
-                            uploadPath = path.join(__dirname, '../../uploads/other/');
-                            break
-                    }
-                    cb(null, uploadPath);
-                },
-                async filename (req, file, cb) {
-                    if(!(await UserChecker(req.body.user_id, req.body.login, req.body.password))){
-                        res.status(401).json({message: "Неверный пользователь"})
-                        return
-                    }
-                    fileoriginalname = file.originalname
-                    newfilename = `${Date.now()}_${file.originalname}`
-                    await db.query(`UPDATE messages SET file = $1, file_type = $2, originalfile = $3 WHERE id = $4;`,[newfilename, req.body.filetype, file.originalname, req.body.message_id])
-                    cb(null, String(newfilename));
-                }
-            });
 
-            let upload = multer({
-                storage,
-                limits: {
-                    fileSize: 524288000
-                },
-                fileFilter: function (req, file, cb) {cb(null, true);}
-            }).single('file');
-
-            upload(req, res, async function (err) {
-                if (err) {
-                    console.log(err);
-                    res.status(500).json({message: "Ошибка загрузки файла"})
-                } else {
-                    res.status(200).json({originalfile: fileoriginalname, file: newfilename})
-                }
-            });
-        } catch (err){
-            console.error(err)
-        }
-    }
     async FileDownload(req, res) {
         try {
             const { message_id, user_id, login, password } = req.body;

@@ -2,12 +2,14 @@ const db = require('../db')
 const moment = require('moment')
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
+const {UserChecker} = require("../userChecker");
 
 class MessageCases {
 
 async NewMessage(message_data) {
     try{
-        const { chat_id, sender_id, recipient_id, content, time_of_day } = JSON.parse(message_data)
+        const { chat_id, sender_id, recipient_id, content, time_of_day, originalfile, file_type } = JSON.parse(message_data)
         const time_stamp = new Date(time_of_day);
         const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
         if (UserSearh.rows.length === 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
@@ -114,26 +116,23 @@ async ArchiveMessage(message_data, login){
     }
 }
 
-async NewFileMessage(message_data) {
-    try {
-        const { message_id, user_id } = JSON.parse(message_data)
-        const message = await db.query(`SELECT * FROM messages WHERE id = $1 AND sender_id = $2;`, [message_id, user_id])
-        if(message.rows.length > 0){
-            return {
-                message_id: message.rows[0].id,
-                sender_id: message.rows[0].sender_id,
-                recipient_id: message.rows[0].recipient_id,
-                chat_id: message.rows[0].chat_id,
-                time_of_day: message.rows[0].time_stamp,
-                new_content: message.rows[0].content,
-                is_edited: message.rows[0].is_edited,
-                file: message.rows[0].originalfile,
-                fyletype: message.rows[0].file_type,
-                type: "updated_message"
-            }
-        } else { return }
-    }catch (err){
-        console.error(err)}
-}
+    async FileMessage(message){
+        try{
+            const buffer = Buffer.from(message);
+            const id = buffer.readBigInt64BE(0);
+            const file_rows = db.query(`SELECT * FROM messages WHERE id = $1;`,[id]);
+            const new_file_name = Date.now() + "_" + file_rows.rows[0].originalfile;
+            if(file_rows.rows.length > 0) {
+                fs.writeFile(path.join(__dirname, path.join(__dirname, '../../uploads/' + file_rows.rows[0].fyle_type, new_file_name), buffer, (err) => {
+                    if (err) console.error(err);
+                }))
+                await db.query(`UPDATE messages SET file = $1 WHERE id = $2;`, [new_file_name, id]);
+                const fileBuffer = buffer.subarray(8);
+                return Uint8Array.from(fileBuffer).buffer;
+            }else{return}
+        } catch (err){
+            console.error(err);
+        }
+    }
 }
 module.exports = new MessageCases()
