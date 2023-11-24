@@ -120,10 +120,16 @@ async NewFileMessage(message_data) {
         const message = await db.query(`SELECT * FROM messages WHERE id = $1 AND sender_id = $2;`, [message_id, user_id])
         if(message.rows.length > 0){
             return {
+                message_id: message.rows[0].id,
+                sender_id: message.rows[0].sender_id,
+                recipient_id: message.rows[0].recipient_id,
+                chat_id: message.rows[0].chat_id,
+                time_of_day: message.rows[0].time_stamp,
+                new_content: message.rows[0].content,
+                is_edited: message.rows[0].is_edited,
                 file: message.rows[0].originalfile,
                 fyletype: message.rows[0].file_type,
-                recipient_id: message.rows[0].recipient_id,
-                type: "new_file_message"
+                type: "updated_message"
             }
         } else { return }
     }catch (err){
