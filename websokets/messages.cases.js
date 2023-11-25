@@ -33,8 +33,8 @@ class MessageCases {
                         }
                     }
                     fileType = getFileType(file_name);
-                    const sourcePath = path.join('../../uploads/temp/', service_file);
-                    const targetPath = path.join('../../uploads/' + fileType + '/', service_file);
+                    const sourcePath = path.join(__dirname, '../../uploads/temp/', service_file);
+                    const targetPath = path.join(__dirname, '../../uploads/' + fileType + '/', service_file);
                     async function fileExists(path) {
                         try {
                             await fs.access(path);
@@ -47,6 +47,7 @@ class MessageCases {
                         await fs.rename(sourcePath, targetPath);
                     } else {
                         throw new Error(`File ${sourcePath} does not exist`);
+                        return
                     }
                 }
                 const result = await db.query(
