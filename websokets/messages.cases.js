@@ -2,39 +2,78 @@ const db = require('../db')
 const moment = require('moment')
 const fs = require("fs");
 const path = require("path");
-const multer = require("multer");
-const {UserChecker} = require("../userChecker");
 
 class MessageCases {
 
-async NewMessage(message_data) {
-    try{
-        const { chat_id, sender_id, recipient_id, content, time_of_day, originalfile, file_type } = JSON.parse(message_data)
-        const time_stamp = new Date(time_of_day);
-        const UserSearh = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
-        if (UserSearh.rows.length === 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
-            const result = await db.query(
-                `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp, is_readed, is_edited, originalfile, file_type)
-                values ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;`,
-                [chat_id, sender_id, recipient_id, content, time_stamp, false, false, originalfile, file_type]
-            );
-            const message = {
-                message_id: result.rows[0].id,
-                chat_id,
-                sender_id,
-                recipient_id,
-                content,
-                time_of_day: result.rows[0].time_stamp,
-                is_readed: result.rows[0].is_readed,
-                is_edited: result.rows[0].is_edited,
-                originalfile,
-                file_type,
-                type: "new_message"}
-            return message;
-            }
+    async NewMessage(message_data) {
+        try {
+            const { chat_id, sender_id, recipient_id, content, time_of_day, file_name, service_file } = JSON.parse(message_data)
+            const time_stamp = new Date(time_of_day);
+            const UserSearch = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
+            if (UserSearch.rows.length === 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
+                let fileType = 'other';
+                if (!(file_name === "" && service_file === "")) {
+                    const getFileType = (filename) => {
+                        const ext = path.extname(filename).toLowerCase();
+                        const types = {
+                            image: ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg'],
+                            video: ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv'],
+                            music: ['.mp3', '.wav', '.aac', '.flac', '.ogg']
+                        };
 
-        }catch (err){
-            console.error(err)
+                        switch (true) {
+                            case types.image.includes(ext):
+                                return 'image';
+                            case types.video.includes(ext):
+                                return 'video';
+                            case types.music.includes(ext):
+                                return 'music';
+                            default:
+                                return 'other';
+                        }
+                    }
+                    fileType = getFileType(file_name);
+                    const sourcePath = path.join('../../uploads/temp/', service_file);
+                    const targetPath = path.join('../../uploads/' + fileType + '/', service_file);
+                    async function fileExists(path) {
+                        try {
+                            await fs.access(path);
+                            return true;
+                        } catch {
+                            return false;
+                        }
+                    }
+                    if (await fileExists(sourcePath)) {
+                        await fs.rename(sourcePath, targetPath);
+                    } else {
+                        throw new Error(`File ${sourcePath} does not exist`);
+                    }
+                }
+                const result = await db.query(
+                    `INSERT INTO messages (chat_id, sender_id, recipient_id, content, time_stamp, is_readed, is_edited, originalfile, file_type, file)
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;`,
+                    [chat_id, sender_id, recipient_id, content, time_stamp, false, false, file_name, fileType, service_file]
+                );
+
+                const message = {
+                    message_id: result.rows[0].id,
+                    chat_id,
+                    sender_id,
+                    recipient_id,
+                    content,
+                    time_of_day: result.rows[0].time_stamp,
+                    is_readed: result.rows[0].is_readed,
+                    is_edited: result.rows[0].is_edited,
+                    file_name,
+                    fileType,
+                    type: "new_message"
+                }
+                return message;
+            } else {
+                throw new Error('One or both users not found');
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 

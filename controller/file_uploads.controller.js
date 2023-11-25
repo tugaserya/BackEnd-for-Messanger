@@ -49,6 +49,45 @@ class FileUploadsController {
             console.error(err);        }
     }
 
+    async FileUpload(req, res){
+        try{
+            let fileoriginalname, newfilename;
+            let storage = multer.diskStorage({
+                destination(req, file, cb) {
+                    const uploadPath = path.join(__dirname, '../../uploads/temp/');
+                    cb(null, uploadPath);
+                    },
+                async filename (req, file, cb) {
+                    if(!(await UserChecker(req.body.user_id, req.body.login, req.body.password))){
+                        res.status(401).json({message: "Неверный пользователь"})
+                        return
+                    }
+                    fileoriginalname = file.originalname
+                    newfilename = `${Date.now()}_${file.originalname}`
+                    cb(null, newfilename);
+                }
+            });
+
+            let upload = multer({
+                storage,
+                limits: {
+                    fileSize: 524288000
+                },
+                fileFilter: function (req, file, cb) {cb(null, true);}
+            }).single('file');
+
+            upload(req, res, function (err) {
+                if (err) {
+                    console.error(err);
+                    res.status(500).json({message: "Ошибка загрузки файла"})
+                } else {
+                    res.status(200).json({file_name: fileoriginalname, service_file: newfilename})
+                }
+            });
+        } catch (err){
+            console.error(err)
+        }
+    }
 
     async FileDownload(req, res) {
         try {
