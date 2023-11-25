@@ -1,6 +1,6 @@
 const db = require('../db')
 const moment = require('moment')
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
 class MessageCases {
