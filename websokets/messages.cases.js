@@ -11,7 +11,7 @@ class MessageCases {
             const time_stamp = new Date(time_of_day);
             const UserSearch = await db.query(`SELECT id FROM users WHERE id = $1 OR id = $2;`, [sender_id, recipient_id]);
             if (UserSearch.rows.length === 2 && moment(time_stamp, moment.ISO_8601, true).isValid()) {
-                let fileType = 'other';
+                let fileType = "";
                 if (!(file_name === "" && service_file === "")) {
                     const getFileType = (filename) => {
                         const ext = path.extname(filename).toLowerCase();
