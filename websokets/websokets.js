@@ -14,7 +14,7 @@ admin.initializeApp({
 
 const clients = new Map();
 
-const sendNotification = async (sender_id, recipient_id, content) => {
+const sendNotification = async (sender_id, recipient_id, content, file_name) => {
     const userDeviceToken = await db.query(`SELECT * FROM users WHERE id = $1;`, [recipient_id])
     const user_name = await db.query(`SELECT user_name FROM users   WHERE id = $1`, [sender_id]);
     const message = {
@@ -23,7 +23,8 @@ const sendNotification = async (sender_id, recipient_id, content) => {
             body: content
         },
         data: {
-            "content": content
+            "content": content,
+            "file": file_name
         },
         token: userDeviceToken.rows[0].fcmtoken
     };
@@ -58,7 +59,7 @@ module.exports.initWebSocket = (server) => {
                                     const recipient_ws = clients.get(String(NewMessage.recipient_id));
                                     recipient_ws.send(payload);
                                 }
-                                await sendNotification(NewMessage.sender_id, NewMessage.recipient_id, NewMessage.content)
+                                await sendNotification(NewMessage.sender_id, NewMessage.recipient_id, NewMessage.content, NewMessage.file_name)
                                 ws.send(payload);
                                 break;
                             case 'update_message':
