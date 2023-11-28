@@ -144,6 +144,9 @@ async ArchiveMessage(message_data, login){
             `SELECT * FROM messages WHERE id = $1;`,
             [deleting_message_id])
         if (message.rows.length > 0) {
+            await fs.unlink(path.join(__dirname,'../../uploads/'+ message.rows[0].file_type), (err => {
+                if (err) console.log(err);
+            }));
             await db.query(
                 `INSERT INTO ARCHIVEmessages SELECT * FROM messages WHERE id = $1;`,
                 [deleting_message_id])
