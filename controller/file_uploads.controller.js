@@ -104,10 +104,10 @@ class FileUploadsController {
                         }
                     });
                 } else {
-                    res.status(418).json({ message: "id пользователя не найден ВОН АЛКАШ" });
+                    res.status(401).json({ message: "Пользователь не соответствует записи в БД" });
                 }
             } else {
-                res.status(418).json({ message: "ВОН АЛКАШ" });
+                res.status(401).json({ message: "Неверный пользователь" });
             }
         } catch (err) {
             console.error(err);

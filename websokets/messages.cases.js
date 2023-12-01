@@ -160,23 +160,5 @@ async ArchiveMessage(message_data, login){
         console.error(err);
     }
 }
-
-    async FileMessage(message_data){
-        try{
-            const {id, base64} = JSON.parse(message_data)
-            const buffer = Buffer.from(base64, 'base64');
-            const file_rows = db.query(`SELECT * FROM messages WHERE id = $1;`,[id]);
-            const new_file_name = Date.now() + "_" + file_rows.rows[0].originalfile;
-            if(file_rows.rows.length > 0) {
-                fs.writeFile(path.join(__dirname, path.join(__dirname, '../../uploads/' + file_rows.rows[0].fyle_type, new_file_name), buffer, (err) => {
-                    if (err) console.error(err);
-                }))
-                await db.query(`UPDATE messages SET file = $1 WHERE id = $2;`, [new_file_name, id]);
-                return base64
-            }else{return}
-        } catch (err){
-            console.error(err);
-        }
-    }
 }
 module.exports = new MessageCases()
