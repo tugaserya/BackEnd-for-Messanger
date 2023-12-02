@@ -37,11 +37,11 @@ class FileUploadsController {
     async DeleteAvatar(req, res){
         try{
             if(await UserChecker(req.body.id ,req.body.login, req.body.password)){
-                const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.user_id])
+                const user = await db.query(`SELECT * FROM users WHERE id = $1;`, [req.body.id])
                 if(user.rows[0].avatar == 0 ){
                     res.status(404).json({message: "У вас нет аватара"})
                 } else{
-                await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[0, req.body.user_id])
+                await db.query(`UPDATE users SET avatar = $1 WHERE id = $2;`,[0, req.body.id])
                 res.status(200).json({message:"Автар удален"})
                 }
             }
