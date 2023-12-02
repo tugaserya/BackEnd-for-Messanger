@@ -6,10 +6,9 @@ CREATE TABLE users
     user_name VARCHAR(50)  NOT NULL,
     login     VARCHAR(50)  NOT NULL,
     password  VARCHAR(100) NOT NULL,
-    FCMtoken VARCHAR(255) NOT NULL
+    FCMtoken VARCHAR(255) NOT NULL,
+    avatar TEXT
 );
-
-ALTER TABLE users ADD avatar TEXT;
 
 CREATE TABLE chats
 (
