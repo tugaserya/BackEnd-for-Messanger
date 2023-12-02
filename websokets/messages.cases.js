@@ -95,8 +95,8 @@ async UpdateMessage(message_data, login){
                 time_of_day: updated_message.rows[0].time_stamp,
                 new_content: updated_message.rows[0].content,
                 is_edited: updated_message.rows[0].is_edited,
-                file_name: updated_message.rows[0].originalfile,
-                fyleType: updated_message.rows[0].file_type,
+                file_name: updated_message.rows[0].originalfile != "" ? updated_message.rows[0].originalfile : "null",
+                fyleType: updated_message.rows[0].file_type != "" ? updated_message.rows[0].file_type : "null",
                 type: "updated_message"}
             return message
             }
