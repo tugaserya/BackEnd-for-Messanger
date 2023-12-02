@@ -69,6 +69,7 @@ module.exports.initWebSocket = (server) => {
                                     const recipient_ws = clients.get(String(updated_message.recipient_id));
                                     recipient_ws.send(payload)
                                 }
+                                console.log("updating work")
                                 ws.send(payload)
                                 break;
                             case 'archive_message':
